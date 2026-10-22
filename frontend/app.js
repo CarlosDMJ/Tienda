@@ -14,15 +14,16 @@
 
 // Detección automática de entorno: Localhost vs Vercel / Render
 const DEFAULT_LOCAL_API = "http://127.0.0.1:8000/api/v1";
-const DEFAULT_CLOUD_API = "https://okidoki-erp-api.onrender.com/api/v1";
 
 function obtenerApiUrl() {
   const custom = localStorage.getItem("custom_api_url");
   if (custom) return custom.replace(/\/+$/, "");
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+  // En desarrollo local con frontend en puerto 3000 y backend en 8000
+  if ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && window.location.port === "3000") {
     return DEFAULT_LOCAL_API;
   }
-  return DEFAULT_CLOUD_API;
+  // En Vercel Serverless (mismo dominio), usar ruta relativa
+  return "/api/v1";
 }
 
 const API_URL = obtenerApiUrl();

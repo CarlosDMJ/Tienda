@@ -1,11 +1,16 @@
 {
-  "cleanUrls": true,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
-      ]
-    }
-  ]
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "app.js", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/index.py" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "env": {
+    "DATABASE_URL": "postgresql://postgres.bqowwqgsmeorgmgjrbgz:Tecnologias123!@aws-0-us-east-2.pooler.supabase.com:6543/postgres",
+    "SECRET_KEY": "clave_secreta_super_segura_okidoki",
+    "ALGORITHM": "HS256"
+  }
 }

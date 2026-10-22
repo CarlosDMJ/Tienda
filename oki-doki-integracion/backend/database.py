@@ -5,12 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
+DEFAULT_SUPABASE_URL = "postgresql://postgres:Tecnologias123!@db.bqowwqgsmeorgmgjrbgz.supabase.co:5432/postgres"
+DATABASE_URL = os.getenv("DATABASE_URL") or DEFAULT_SUPABASE_URL
 
+# Soporte automático por si se usa el respaldo SQLite local o PostgreSQL de Supabase
 try:
     if DATABASE_URL.startswith("sqlite"):
         engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
     else:
+        # Normalizar dialecto para psycopg2 si viene como postgresql://
         db_url_pg = DATABASE_URL
         if db_url_pg.startswith("postgresql://"):
             db_url_pg = db_url_pg.replace("postgresql://", "postgresql+psycopg2://", 1)

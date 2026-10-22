@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
+DEFAULT_SUPABASE_URL = "postgresql://postgres:Tecnologias123!@db.bqowwqgsmeorgmgjrbgz.supabase.co:5432/postgres"
+DATABASE_URL = os.getenv("DATABASE_URL") or DEFAULT_SUPABASE_URL
 
 # Soporte automático por si se usa el respaldo SQLite local o PostgreSQL de Supabase
 try:
