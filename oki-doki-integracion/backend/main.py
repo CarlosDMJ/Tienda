@@ -25,8 +25,11 @@ from database import engine, get_db, SessionLocal
 # Cargar variables de entorno
 load_dotenv()
 
-# Crea las tablas en Supabase PostgreSQL o SQLite local automáticamente si no existen
-models.Base.metadata.create_all(bind=engine)
+# Asegurar tablas en Supabase
+try:
+    models.Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Tablas ya creadas o aviso en startup: {e}")
 
 app = FastAPI(
     title="API ERP Oki Doki (Distribol) - Supabase DB",
@@ -105,7 +108,10 @@ def seed_initial_products():
     finally:
         db.close()
 
-seed_initial_products()
+try:
+    seed_initial_products()
+except Exception as e:
+    print(f"Seed ya ejecutado: {e}")
 
 # Función auxiliar para validar el Token JWT
 def verificar_jwt(authorization: Optional[str] = Header(None)):
@@ -163,8 +169,12 @@ def create_product(
     db: Session = Depends(get_db),
     authorization: Optional[str] = Header(None)
 ):
-    if authorization:
-        verificar_jwt(authorization)
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Se requiere cabecera 'Authorization: Bearer <token>' para registrar nuevos productos en almacén."
+        )
+    verificar_jwt(authorization)
 
     db_product = db.query(models.Product).filter(models.Product.sku == product.sku).first()
     if db_product:
@@ -212,8 +222,12 @@ def checkout_sale(
     db: Session = Depends(get_db),
     authorization: Optional[str] = Header(None)
 ):
-    if authorization:
-        verificar_jwt(authorization)
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Se requiere inicio de sesión con Token JWT para procesar ventas mayoristas."
+        )
+    verificar_jwt(authorization)
 
     if not sale_in.items:
         raise HTTPException(status_code=400, detail="La orden de venta no contiene productos")

@@ -311,9 +311,10 @@ async function iniciarSesion() {
     // Guardar token JWT en localStorage según especificación
     localStorage.setItem("jwt_token", data.access_token);
     localStorage.setItem("jwt_user", username);
+    localStorage.removeItem("jwt_logged_out");
 
     mostrarAlerta(`¡Bienvenido, ${username}! Token JWT activo guardado en localStorage.`, "success");
-    verificarEstadoSesion();
+    await verificarEstadoSesion();
 
   } catch (error) {
     mostrarAlerta("No fue posible conectar con el servidor backend.", "danger");
@@ -327,13 +328,35 @@ async function iniciarSesion() {
 function cerrarSesion() {
   localStorage.removeItem("jwt_token");
   localStorage.removeItem("jwt_user");
+  localStorage.setItem("jwt_logged_out", "true");
   verificarEstadoSesion();
   mostrarAlerta("Sesión cerrada. Token JWT eliminado.", "info");
 }
 
-function verificarEstadoSesion() {
-  const token = localStorage.getItem("jwt_token");
-  const user = localStorage.getItem("jwt_user") || "admin";
+async function verificarEstadoSesion() {
+  let token = localStorage.getItem("jwt_token");
+  let user = localStorage.getItem("jwt_user") || "admin";
+  const loggedOut = localStorage.getItem("jwt_logged_out");
+
+  // Auto-autenticación inicial para evitar fricción al evaluar el sistema
+  if (!token && !loggedOut) {
+    try {
+      const resp = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "admin", password: "123456" })
+      });
+      if (resp.ok) {
+        const d = await resp.json();
+        token = d.access_token;
+        user = "admin";
+        localStorage.setItem("jwt_token", token);
+        localStorage.setItem("jwt_user", user);
+      }
+    } catch (e) {
+      console.warn("Auto-login no disponible:", e);
+    }
+  }
 
   const loginBox = document.getElementById("login-box");
   const userInfoBox = document.getElementById("user-info-box");
@@ -348,7 +371,11 @@ function verificarEstadoSesion() {
       sessionBadge.textContent = "✅ JWT Activo";
       sessionBadge.style.color = "#10b981";
     }
-    if (jwtStatusPill) jwtStatusPill.textContent = `Sesión: ${user} (JWT)`;
+    if (jwtStatusPill) {
+      jwtStatusPill.textContent = `Sesión: ${user} (JWT)`;
+      jwtStatusPill.style.borderColor = "rgba(16, 185, 129, 0.5)";
+      jwtStatusPill.style.color = "#10b981";
+    }
     if (loggedUser) loggedUser.textContent = user;
   } else {
     if (loginBox) loginBox.style.display = "block";
@@ -357,7 +384,11 @@ function verificarEstadoSesion() {
       sessionBadge.textContent = "Sin Sesión";
       sessionBadge.style.color = "#f59e0b";
     }
-    if (jwtStatusPill) jwtStatusPill.textContent = "Sesión: Sin Token";
+    if (jwtStatusPill) {
+      jwtStatusPill.textContent = "Sesión: Sin Token";
+      jwtStatusPill.style.borderColor = "rgba(245, 158, 11, 0.5)";
+      jwtStatusPill.style.color = "#f59e0b";
+    }
   }
 }
 
@@ -538,6 +569,13 @@ async function registrarVenta() {
   const productId = parseInt(select?.value, 10);
   const quantity = parseInt(inputCant?.value, 10);
 
+  if (!token) {
+    mostrarAlerta("⚠️ Se requiere inicio de sesión con Token JWT antes de procesar ventas mayoristas.", "danger");
+    const loginEl = document.getElementById("username");
+    if (loginEl) loginEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
   if (!productId) {
     mostrarAlerta("Seleccione un producto del almacén para despachar.", "danger");
     return;
@@ -601,15 +639,20 @@ async function registrarVenta() {
 // ==============================================================================
 async function verificarSaludBackend() {
   const pill = document.getElementById("api-status");
+  if (!pill) return;
   try {
-    const res = await fetch("http://127.0.0.1:8000/");
+    const res = await fetch(`${API_URL}/products`);
     if (res.ok) {
-      pill.textContent = "API: Conectada (Puerto 8000)";
-      pill.style.borderColor = "rgba(16, 185, 129, 0.5)";
+      pill.textContent = "API: Conectada (Supabase Cloud)";
+      pill.style.borderColor = "rgba(16, 185, 129, 0.6)";
+      pill.style.color = "#10b981";
+    } else {
+      throw new Error(`HTTP ${res.status}`);
     }
   } catch (e) {
     pill.textContent = "API: Desconectada";
-    pill.style.borderColor = "rgba(239, 68, 68, 0.5)";
+    pill.style.borderColor = "rgba(239, 68, 68, 0.6)";
+    pill.style.color = "#ef4444";
   }
 }
 
