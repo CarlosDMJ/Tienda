@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Variables de entorno y bases de datos locales
+.env
+*.db
+*.sqlite3
+
+# Node / Vercel
+node_modules/
+.vercel/
+
+# Logs
+*.log
+.system_generated/

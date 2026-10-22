@@ -1,0 +1,15 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos y bases de datos locales
+.env
+*.db
+*.sqlite3
+
+# Logs
+*.log
+.system_generated/
