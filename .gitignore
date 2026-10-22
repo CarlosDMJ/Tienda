@@ -1,7 +1,10 @@
 # Python
 venv/
+.venv/
 __pycache__/
 *.pyc
+*.py[cod]
+*$py.class
 
 # Variables de entorno y bases de datos locales
 .env
@@ -15,5 +18,3 @@ node_modules/
 # Logs
 *.log
 .system_generated/
-
-.vercel
