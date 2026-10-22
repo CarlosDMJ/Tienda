@@ -174,6 +174,73 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
+    /* ========================================================================= */
+    /* PANTALLA DEDICADA DE LOGIN / CONTROL DE ACCESO */
+    /* ========================================================================= */
+    .login-gateway {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      min-height: 65vh;
+    }
+    .login-card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .login-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 2rem 1.8rem;
+      text-align: center;
+    }
+    .login-body {
+      padding: 1.8rem;
+    }
+    .quick-roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .btn-role {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.4rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-role:hover {
+      border-color: var(--accent);
+      background: #fffbeb;
+    }
+    .btn-role.active {
+      border-color: var(--accent);
+      background: #fffbeb;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35);
+    }
+    .btn-role .role-icon { font-size: 1.25rem; display: block; margin-bottom: 0.2rem; }
+    .btn-role .role-text strong { display: block; font-size: 0.72rem; color: var(--primary); }
+    .btn-role .role-text small { color: var(--muted); font-size: 0.68rem; font-family: monospace; }
+    .login-security-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     /* NAVEGACIÓN MODULAR POR SECTORES (LOS 5 ESTADOS / SECTORES DEL ERP) */
     .sectors-nav {
       display: flex;
@@ -518,538 +585,579 @@
         <span>💬</span> Comentera (Herramienta 4)
       </button>
       <div class="pill-info" id="api-status">API: Conectando...</div>
-      <div class="pill-info" id="jwt-status">Sesión: admin (JWT)</div>
+      <div class="pill-info" id="jwt-status">Sesión: Sin Token</div>
+      <button class="btn btn-danger btn-sm" id="btn-header-logout" onclick="cerrarSesion()" style="display: none;">
+        🚪 Cerrar Sesión
+      </button>
+      <button class="btn btn-accent btn-sm" id="btn-header-login" onclick="mostrarPantallaLogin()">
+        🔐 Iniciar Sesión
+      </button>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- BARRA RESUMEN DE INTEGRACIÓN DE LAS 6 HERRAMIENTAS -->
-    <div class="tools-bar">
-      <div class="tool-chip">
-        <span class="chip-icon">🤖</span>
-        <div>
-          <strong>1. Devin AI</strong>
-          <span>Boilerplate & Lógica</span>
-        </div>
-      </div>
-      <div class="tool-chip" style="cursor: pointer;" onclick="probarSlackWebhook()">
-        <span class="chip-icon">🔔</span>
-        <div>
-          <strong>2. Slack</strong>
-          <span>Alertas Webhook</span>
-        </div>
-      </div>
-      <div class="tool-chip">
-        <span class="chip-icon">▲</span>
-        <div>
-          <strong>3. Vercel</strong>
-          <span>Fullstack Serverless</span>
-        </div>
-      </div>
-      <div class="tool-chip" style="cursor: pointer;" onclick="abrirModalComentera()">
-        <span class="chip-icon">💬</span>
-        <div>
-          <strong>4. Comentera</strong>
-          <span>Feedback Docente</span>
-        </div>
-      </div>
-      <div class="tool-chip" style="cursor: pointer;" onclick="mostrarSector('sector-inventario')">
-        <span class="chip-icon">📦</span>
-        <div>
-          <strong>5. Gráficos 3D</strong>
-          <span>Three.js Canvas</span>
-        </div>
-      </div>
-      <div class="tool-chip">
-        <span class="chip-icon">⚡</span>
-        <div>
-          <strong>6. Supabase DB</strong>
-          <span>PostgreSQL Ohio</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- REGLA DE NEGOCIO ESTRICTA -->
-    <div class="banner-rule">
-      <div>
-        <strong>📌 REGLA DE NEGOCIO ESTRICTA "OKI DOKI":</strong>
-        Toda operación se realiza directamente en almacén central. <strong>Cero personal de reparto ni vehículos</strong>.
-      </div>
-      <div style="font-size: 0.8rem; background: rgba(245, 158, 11, 0.15); padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid var(--accent);">
-        Moneda Oficial: <strong>Bolivianos (Bs.)</strong> | Transacciones: <strong>ACID</strong>
-      </div>
-    </div>
-
     <!-- NOTIFICACIONES GLOBALES -->
     <div id="global-alert" class="alert"></div>
 
     <!-- ========================================================================= -->
-    <!-- BARRA DE NAVEGACIÓN MODULAR POR SECTORES (LOS 5 ESTADOS / SECTORES) -->
+    <!-- PANTALLA PRINCIPAL DE INICIO DE SESIÓN (LOGIN GATEWAY) -->
     <!-- ========================================================================= -->
-    <nav class="sectors-nav">
-      <button class="sector-tab active" data-sector="sector-inventario" onclick="mostrarSector('sector-inventario')">
-        <span>📦</span>
-        <span>Sector 2: Catálogo e Inventario (3D)</span>
-        <span class="tab-badge" id="badge-count-prod">7</span>
-      </button>
-      <button class="sector-tab" data-sector="sector-ventas" onclick="mostrarSector('sector-ventas')">
-        <span>🛒</span>
-        <span>Sector 4: Ventas Mostrador (ACID)</span>
-      </button>
-      <button class="sector-tab" data-sector="sector-compras" onclick="mostrarSector('sector-compras')">
-        <span>🚚</span>
-        <span>Sector 3: Proveedores y Compras</span>
-      </button>
-      <button class="sector-tab" data-sector="sector-kardex" onclick="mostrarSector('sector-kardex')">
-        <span>📊</span>
-        <span>Sector 5: Kardex y Auditoría</span>
-      </button>
-      <button class="sector-tab" data-sector="sector-usuarios" onclick="mostrarSector('sector-usuarios')">
-        <span>🔐</span>
-        <span>Sector 1: Usuarios y Acceso</span>
-      </button>
-    </nav>
-
-
-    <!-- ========================================================================= -->
-    <!-- SECTOR 2: CATÁLOGO E INVENTARIO MAYORISTA (CON VISOR 3D THREE.JS) -->
-    <!-- ========================================================================= -->
-    <section class="sector-view active" id="sector-inventario">
-      
-      <div class="grid-2">
-        <!-- VISOR 3D INTERACTIVO THREE.JS (HERRAMIENTA 5) -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">🎨 Visor 3D de Mercancía Mayorista (Three.js)</h2>
-            <span style="font-size: 0.72rem; color: #3b82f6; font-weight: 700;">Rotación 360° con Mouse</span>
-          </div>
-          <div class="card-body" style="display: flex; flex-direction: column;">
-            <div class="canvas-3d-wrapper">
-              <div id="canvas-container"></div>
-              <div class="canvas-overlay-tag">
-                <span id="canvas-product-sku">SKU: ACE-001</span> • <span id="canvas-product-type">Caja Cartón Mayorista</span>
-              </div>
-            </div>
-            <div class="canvas-controls-bar">
-              <div>
-                <button class="btn btn-outline btn-sm" id="btn-toggle-spin" onclick="toggleGiro3D()">⏸️ Pausar Giro</button>
-                <button class="btn btn-outline btn-sm" onclick="cambiarEmpaque3D('caja')">📦 Caja</button>
-                <button class="btn btn-outline btn-sm" onclick="cambiarEmpaque3D('fardo')">🧴 Fardo</button>
-                <button class="btn btn-outline btn-sm" onclick="cambiarEmpaque3D('saco')">🌾 Quintal</button>
-              </div>
-              <span style="font-size: 0.75rem; color: var(--muted);" id="box-dimensions-label">Dim: 40x30x25cm • ~12kg</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- FORMULARIO DE REGISTRO DE NUEVA MERCANCÍA -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">📦 Registro de Nueva Mercancía</h2>
-            <span style="font-size: 0.72rem; color: var(--muted); font-family: monospace;">POST /api/v1/products</span>
-          </div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="new-sku">Código SKU Único:</label>
-                <input type="text" id="new-sku" placeholder="Ej. HAR-025">
-              </div>
-              <div class="form-group">
-                <label for="new-stock">Stock Inicial (Cajas/Fardos):</label>
-                <input type="number" id="new-stock" placeholder="Ej. 50" min="0" value="25">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="new-name">Nombre & Presentación Mayorista:</label>
-              <input type="text" id="new-name" placeholder="Ej. Quintal Harina Especial 50kg">
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="new-cost">Costo Compra en Bs.:</label>
-                <input type="number" id="new-cost" step="0.5" placeholder="Ej. 180.00" value="180.00">
-              </div>
-              <div class="form-group">
-                <label for="new-price">Precio Venta Mostrador (Bs.):</label>
-                <input type="number" id="new-price" step="0.5" placeholder="Ej. 210.00" value="210.00">
-              </div>
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="guardarProducto()">
-              💾 Registrar Producto (Dispara Alerta Slack & Kardex)
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- TABLA DE EXISTENCIAS FÍSICAS -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">📋 Catálogo General de Existencias Físicas en Almacén</h2>
-          <button class="btn btn-outline btn-sm" onclick="cargarProductos()">🔄 Actualizar Inventario</button>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>SKU</th>
-                  <th>Producto & Presentación</th>
-                  <th>Costo Compra</th>
-                  <th>Precio Venta (Bs.)</th>
-                  <th>Stock Físico</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="inventory-tbody">
-                <tr><td colspan="7" style="text-align: center; padding: 2rem;">Cargando inventario desde Supabase...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- ========================================================================= -->
-    <!-- SECTOR 4: CLIENTES Y VENTAS MOSTRADOR (ACID) -->
-    <!-- ========================================================================= -->
-    <section class="sector-view" id="sector-ventas">
-
-      <div class="grid-2">
-        <!-- PUNTO DE VENTA ACID -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">🛒 Punto de Venta / Checkout Mostrador (ACID)</h2>
-            <span style="font-size: 0.72rem; color: var(--success); font-weight: 700; font-family: monospace;">POST /api/v1/sales/checkout</span>
-          </div>
-          <div class="card-body">
-            <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem;">
-              Descuento transaccional inmediato con reversión atómica (rollback) si el stock físico no satisface la orden:
-            </p>
-            <div class="form-group">
-              <label for="sale-customer-name">Cliente Mayorista:</label>
-              <input type="text" id="sale-customer-name" value="Doña Remedios - Abarrotes Los Pozos" placeholder="Nombre o Razón Social del Cliente">
-            </div>
-            <div class="form-group">
-              <label for="sale-product-select">Seleccione Producto en Almacén:</label>
-              <select id="sale-product-select">
-                <option value="">-- Cargando inventario... --</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="sale-quantity">Cantidad de Cajas / Fardos a Despachar:</label>
-                <input type="number" id="sale-quantity" min="1" value="2">
-              </div>
-              <div class="form-group" style="display: flex; align-items: flex-end;">
-                <button class="btn btn-accent" id="btn-process-sale" style="width: 100%;" onclick="registrarVenta()">
-                  ⚡ Procesar Venta Mostrador
-                </button>
-              </div>
-            </div>
-            <div style="font-size: 0.8rem; color: var(--muted); background: #f8fafc; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border);" id="sale-preview-info">
-              Seleccione un ítem para calcular el importe en Bs. y verificar el stock restante.
-            </div>
-          </div>
-        </div>
-
-        <!-- REGLA LOGÍSTICA DE VENTA -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">📋 Protocolo de Despacho en Almacén</h2>
-          </div>
-          <div class="card-body" style="font-size: 0.86rem; color: #334155;">
-            <ul style="padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem;">
-              <li><strong>Cero Transportistas:</strong> El cliente mayorista realiza el pago y retira la mercancía directamente en las puertas del almacén central.</li>
-              <li><strong>Transacción ACID Garantizada:</strong> Si dos vendedores intentan despachar el último fardo simultáneamente, la base de datos de Supabase bloquea el sobregiro garantizando consistencia inmutable.</li>
-              <li><strong>Comprobante Oficial:</strong> Se genera una numeración correlativa única (ej. <code>VTA-20261022-0001</code>).</li>
-              <li><strong>Notificación en Tiempo Real:</strong> Cada venta confirmada dispara una alerta instantánea vía Webhook a Slack.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- HISTORIAL DE VENTAS REGISTRADAS -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">🧾 Historial de Comprobantes de Venta Emitidos</h2>
-          <button class="btn btn-outline btn-sm" onclick="cargarVentasHistorial()">🔄 Actualizar Historial</button>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Comprobante</th>
-                  <th>Fecha y Hora</th>
-                  <th>Total Cobrado (Bs.)</th>
-                  <th>Ítems Despachados</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody id="sales-history-tbody">
-                <tr><td colspan="6" style="text-align: center; padding: 1.5rem;">Cargando historial de ventas...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- ========================================================================= -->
-    <!-- SECTOR 3: PROVEEDORES Y COMPRAS (REABASTECIMIENTO) -->
-    <!-- ========================================================================= -->
-    <section class="sector-view" id="sector-compras">
-
-      <div class="grid-2">
-        <!-- RECEPCIÓN DE COMPRA -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">📥 Recepción de Mercancía / Reabastecimiento</h2>
-            <span style="font-size: 0.72rem; color: var(--info); font-weight: 700; font-family: monospace;">POST /api/v1/purchases</span>
-          </div>
-          <div class="card-body">
-            <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem;">
-              Registra el ingreso de lotes de fábricas. Incrementa el stock físico y crea un asiento de <strong>ENTRADA</strong> en el Kardex:
-            </p>
-            <div class="form-group">
-              <label for="purchase-supplier-select">Proveedor / Industria Fabricante:</label>
-              <select id="purchase-supplier-select">
-                <option value="">-- Cargando proveedores... --</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="purchase-invoice">N° Factura / Nota Entrega:</label>
-                <input type="text" id="purchase-invoice" placeholder="Ej. FAC-99482">
-              </div>
-              <div class="form-group">
-                <label for="purchase-product-select">Producto a Reabastecer:</label>
-                <select id="purchase-product-select">
-                  <option value="">-- Seleccione producto --</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="purchase-quantity">Cantidad Ingresada (Cajas/Fardos):</label>
-                <input type="number" id="purchase-quantity" min="1" value="50">
-              </div>
-              <div class="form-group">
-                <label for="purchase-unit-cost">Costo Unitario Pactado (Bs.):</label>
-                <input type="number" id="purchase-unit-cost" step="0.5" min="1" value="120.00">
-              </div>
-            </div>
-            <button class="btn btn-success" style="width: 100%;" onclick="registrarCompra()">
-              📥 Registrar Recepción e Incrementar Stock
-            </button>
-          </div>
-        </div>
-
-        <!-- ALTA DE NUEVO PROVEEDOR -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">🏭 Directorio de Proveedores Mayoristas</h2>
-            <span style="font-size: 0.72rem; color: var(--muted); font-family: monospace;">POST /api/v1/suppliers</span>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <label for="sup-razon">Razón Social o Empresa Fabricante:</label>
-              <input type="text" id="sup-razon" placeholder="Ej. Cervecería Boliviana Nacional S.A.">
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="sup-nit">NIT Bolivia:</label>
-                <input type="text" id="sup-nit" placeholder="Ej. 1029384756">
-              </div>
-              <div class="form-group">
-                <label for="sup-tel">Teléfono Comercial:</label>
-                <input type="text" id="sup-tel" placeholder="Ej. 2-2849922">
-              </div>
-            </div>
-            <button class="btn btn-outline" style="width: 100%; border-color: #0284c7; color: #0284c7;" onclick="guardarProveedor()">
-              ➕ Registrar Proveedor Mayorista
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- TABLA DE PROVEEDORES VIGENTES -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">🏢 Empresas Proveedoras Autorizadas</h2>
-          <button class="btn btn-outline btn-sm" onclick="cargarProveedores()">🔄 Actualizar</button>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Razón Social</th>
-                  <th>NIT</th>
-                  <th>Teléfono</th>
-                  <th>Email Comercial</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody id="suppliers-tbody">
-                <tr><td colspan="6" style="text-align: center; padding: 1.5rem;">Cargando proveedores...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- ========================================================================= -->
-    <!-- SECTOR 5: KARDEX Y AUDITORÍA DE MOVIMIENTOS -->
-    <!-- ========================================================================= -->
-    <section class="sector-view" id="sector-kardex">
-
-      <div class="stats-row">
-        <div class="stat-card">
-          <span class="stat-label">Movimientos Registrados</span>
-          <span class="stat-value" id="stat-kardex-count">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Tipo de Bitácora</span>
-          <span class="stat-value" style="font-size: 1.15rem; color: var(--info);">Inmutable (Append-Only)</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Trazabilidad Forense</span>
-          <span class="stat-value" style="font-size: 1.15rem; color: var(--success);">100% Auditada</span>
-        </div>
-      </div>
-
-      <!-- TABLA KARDEX -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">📊 Bitácora Inmutable de Kardex (Trazabilidad de Existencias)</h2>
-          <button class="btn btn-outline btn-sm" onclick="cargarKardex()">🔄 Recargar Bitácora</button>
-        </div>
-        <div class="card-body">
-          <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem;">
-            Cada unidad que ingresa o sale de Oki Doki queda auditada con su fotografía de saldo previo, unidades variadas, saldo final y documento mercantil de respaldo:
+    <div id="pantalla-login" class="login-gateway">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="brand-badge" style="display: inline-block; margin-bottom: 0.6rem;">OKI DOKI</div>
+          <h2 style="font-size: 1.35rem; font-weight: 800;">DISTRIBOL <span style="color: var(--accent); font-weight: 400;">| ERP Mayorista</span></h2>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.35rem;">
+            Control de Acceso Operativo • Almacén Central
           </p>
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>Asiento</th>
-                  <th>Tipo</th>
-                  <th>SKU</th>
-                  <th>Producto</th>
-                  <th>Variación</th>
-                  <th>Stock Previo</th>
-                  <th>Stock Final</th>
-                  <th>Comprobante Mercantil</th>
-                  <th>Fecha y Hora</th>
-                </tr>
-              </thead>
-              <tbody id="kardex-tbody">
-                <tr><td colspan="9" style="text-align: center; padding: 2rem;">Cargando movimientos de Kardex desde Supabase...</td></tr>
-              </tbody>
-            </table>
+        </div>
+        <div class="login-body">
+          <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.9rem;">
+            Seleccione una cuenta de operador autorizada o escriba sus credenciales:
+          </p>
+          
+          <!-- SELECTOR RÁPIDO DE LOS 3 ROLES -->
+          <div class="quick-roles-grid">
+            <button type="button" class="btn-role active" id="role-btn-admin" onclick="seleccionarRolDemo('admin', '123456', 'Administrador')">
+              <span class="role-icon">👑</span>
+              <div class="role-text">
+                <strong>Admin</strong>
+                <small>admin</small>
+              </div>
+            </button>
+            <button type="button" class="btn-role" id="role-btn-cajero" onclick="seleccionarRolDemo('cajero1', '123456', 'Cajero/Vendedor')">
+              <span class="role-icon">🛒</span>
+              <div class="role-text">
+                <strong>Vendedor</strong>
+                <small>cajero1</small>
+              </div>
+            </button>
+            <button type="button" class="btn-role" id="role-btn-almacen" onclick="seleccionarRolDemo('almacen1', '123456', 'Encargado de Almacén')">
+              <span class="role-icon">📦</span>
+              <div class="role-text">
+                <strong>Almacén</strong>
+                <small>almacen1</small>
+              </div>
+            </button>
+          </div>
+
+          <form onsubmit="event.preventDefault(); iniciarSesion();">
+            <div class="form-group">
+              <label for="username">Usuario Operador:</label>
+              <input type="text" id="username" value="admin" placeholder="admin" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label for="password">Contraseña de Acceso:</label>
+              <input type="password" id="password" value="123456" placeholder="123456" required autocomplete="current-password">
+            </div>
+            <button class="btn btn-accent" id="btn-login" style="width: 100%; padding: 0.8rem; font-size: 0.95rem; margin-top: 0.4rem;" type="submit">
+              ⚡ Iniciar Sesión en el ERP Oki Doki
+            </button>
+          </form>
+
+          <div class="login-security-footer">
+            <span>🔒 Token JWT (HS256)</span>
+            <span>⚡ Supabase PostgreSQL</span>
+            <span>📍 Cero Transportistas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- CONTENEDOR PRINCIPAL DEL ERP (LOS 5 SECTORES) - VISIBLE AL AUTENTICARSE -->
+    <!-- ========================================================================= -->
+    <div id="contenedor-erp" style="display: none;">
+
+      <!-- BARRA RESUMEN DE INTEGRACIÓN DE LAS 6 HERRAMIENTAS -->
+      <div class="tools-bar">
+        <div class="tool-chip">
+          <span class="chip-icon">🤖</span>
+          <div>
+            <strong>1. Devin AI</strong>
+            <span>Boilerplate & Lógica</span>
+          </div>
+        </div>
+        <div class="tool-chip" style="cursor: pointer;" onclick="probarSlackWebhook()">
+          <span class="chip-icon">🔔</span>
+          <div>
+            <strong>2. Slack</strong>
+            <span>Alertas Webhook</span>
+          </div>
+        </div>
+        <div class="tool-chip">
+          <span class="chip-icon">▲</span>
+          <div>
+            <strong>3. Vercel</strong>
+            <span>Fullstack Serverless</span>
+          </div>
+        </div>
+        <div class="tool-chip" style="cursor: pointer;" onclick="abrirModalComentera()">
+          <span class="chip-icon">💬</span>
+          <div>
+            <strong>4. Comentera</strong>
+            <span>Feedback Docente</span>
+          </div>
+        </div>
+        <div class="tool-chip" style="cursor: pointer;" onclick="mostrarSector('sector-inventario')">
+          <span class="chip-icon">📦</span>
+          <div>
+            <strong>5. Gráficos 3D</strong>
+            <span>Three.js Canvas</span>
+          </div>
+        </div>
+        <div class="tool-chip">
+          <span class="chip-icon">⚡</span>
+          <div>
+            <strong>6. Supabase DB</strong>
+            <span>PostgreSQL Ohio</span>
           </div>
         </div>
       </div>
 
-    </section>
+      <!-- REGLA DE NEGOCIO ESTRICTA -->
+      <div class="banner-rule">
+        <div>
+          <strong>📌 REGLA DE NEGOCIO ESTRICTA "OKI DOKI":</strong>
+          Toda operación se realiza directamente en mostrador de almacén central. <strong>Cero personal de reparto ni vehículos</strong>.
+        </div>
+        <div style="font-size: 0.8rem; background: rgba(245, 158, 11, 0.15); padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid var(--accent);">
+          Moneda Oficial: <strong>Bolivianos (Bs.)</strong> | Transacciones: <strong>ACID</strong>
+        </div>
+      </div>
 
+      <!-- BARRA DE NAVEGACIÓN MODULAR POR SECTORES -->
+      <nav class="sectors-nav">
+        <button class="sector-tab active" data-sector="sector-inventario" onclick="mostrarSector('sector-inventario')">
+          <span>📦</span>
+          <span>Sector 2: Catálogo e Inventario (3D)</span>
+          <span class="tab-badge" id="badge-count-prod">7</span>
+        </button>
+        <button class="sector-tab" data-sector="sector-ventas" onclick="mostrarSector('sector-ventas')">
+          <span>🛒</span>
+          <span>Sector 4: Ventas Mostrador (ACID)</span>
+        </button>
+        <button class="sector-tab" data-sector="sector-compras" onclick="mostrarSector('sector-compras')">
+          <span>🚚</span>
+          <span>Sector 3: Proveedores y Compras</span>
+        </button>
+        <button class="sector-tab" data-sector="sector-kardex" onclick="mostrarSector('sector-kardex')">
+          <span>📊</span>
+          <span>Sector 5: Kardex y Auditoría</span>
+        </button>
+        <button class="sector-tab" data-sector="sector-usuarios" onclick="mostrarSector('sector-usuarios')">
+          <span>🔐</span>
+          <span>Sector 1: Usuarios y Acceso</span>
+        </button>
+      </nav>
 
-    <!-- ========================================================================= -->
-    <!-- SECTOR 1: USUARIOS Y AUTENTICACIÓN JWT -->
-    <!-- ========================================================================= -->
-    <section class="sector-view" id="sector-usuarios">
+      <!-- SECTOR 2: INVENTARIO & 3D -->
+      <section class="sector-view active" id="sector-inventario">
+        <div class="grid-2">
+          <!-- VISOR 3D THREE.JS -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">🎨 Visor 3D de Mercancía Mayorista (Three.js)</h2>
+              <span style="font-size: 0.72rem; color: #3b82f6; font-weight: 700;">Rotación 360° Interactiva</span>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column;">
+              <div class="canvas-3d-wrapper">
+                <div id="canvas-container"></div>
+                <div class="canvas-overlay-tag">
+                  <span id="canvas-product-sku">SKU: ACE-001</span> • <span id="canvas-product-type">Caja Cartón Mayorista</span>
+                </div>
+              </div>
+              <div class="canvas-controls-bar">
+                <div>
+                  <button class="btn btn-outline btn-sm" id="btn-toggle-spin" onclick="toggleGiro3D()">⏸️ Pausar Giro</button>
+                  <button class="btn btn-outline btn-sm" onclick="cambiarEmpaque3D('caja')">📦 Caja</button>
+                  <button class="btn btn-outline btn-sm" onclick="cambiarEmpaque3D('fardo')">🧴 Fardo</button>
+                  <button class="btn btn-outline btn-sm" onclick="cambiarEmpaque3D('saco')">🌾 Quintal</button>
+                </div>
+                <span style="font-size: 0.75rem; color: var(--muted);" id="box-dimensions-label">Dim: 40x30x25cm • ~12kg</span>
+              </div>
+            </div>
+          </div>
 
-      <div class="grid-2">
-        <!-- TARJETA LOGIN / SESIÓN -->
+          <!-- REGISTRO PRODUCTO -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">📦 Registro de Nueva Mercancía</h2>
+              <span style="font-size: 0.72rem; color: var(--muted); font-family: monospace;">POST /api/v1/products</span>
+            </div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="new-sku">Código SKU Único:</label>
+                  <input type="text" id="new-sku" placeholder="Ej. HAR-025">
+                </div>
+                <div class="form-group">
+                  <label for="new-stock">Stock Inicial (Cajas/Fardos):</label>
+                  <input type="number" id="new-stock" placeholder="Ej. 50" min="0" value="25">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="new-name">Nombre & Presentación Mayorista:</label>
+                <input type="text" id="new-name" placeholder="Ej. Quintal Harina Especial 50kg">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="new-cost">Costo Compra en Bs.:</label>
+                  <input type="number" id="new-cost" step="0.5" placeholder="Ej. 180.00" value="180.00">
+                </div>
+                <div class="form-group">
+                  <label for="new-price">Precio Venta Mostrador (Bs.):</label>
+                  <input type="number" id="new-price" step="0.5" placeholder="Ej. 210.00" value="210.00">
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: 100%;" onclick="guardarProducto()">
+                💾 Registrar Producto (Dispara Alerta Slack & Kardex)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA INVENTARIO -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">🔐 Control de Sesión y Token Bearer JWT</h2>
-            <span id="session-badge" style="font-size: 0.78rem; font-weight: 700; color: #10b981;">✅ JWT Activo</span>
+            <h2 class="card-title">📋 Catálogo General de Existencias Físicas en Almacén</h2>
+            <button class="btn btn-outline btn-sm" onclick="cargarProductos()">🔄 Actualizar Inventario</button>
           </div>
           <div class="card-body">
-            <div id="login-box">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>SKU</th>
+                    <th>Producto & Presentación</th>
+                    <th>Costo Compra</th>
+                    <th>Precio Venta (Bs.)</th>
+                    <th>Stock Físico</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-tbody">
+                  <tr><td colspan="7" style="text-align: center; padding: 2rem;">Cargando inventario desde Supabase...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTOR 4: VENTAS MOSTRADOR (ACID) -->
+      <section class="sector-view" id="sector-ventas">
+        <div class="grid-2">
+          <!-- PUNTO DE VENTA -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">🛒 Punto de Venta / Checkout Mostrador (ACID)</h2>
+              <span style="font-size: 0.72rem; color: var(--success); font-weight: 700; font-family: monospace;">POST /api/v1/sales/checkout</span>
+            </div>
+            <div class="card-body">
               <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem;">
-                Credenciales autorizadas de operador de mostrador para emitir token Bearer:
+                Descuento transaccional inmediato con reversión atómica (rollback) si el stock físico no satisface la orden:
               </p>
               <div class="form-group">
-                <label for="username">Usuario:</label>
-                <input type="text" id="username" value="admin" placeholder="admin">
+                <label for="sale-customer-name">Cliente Mayorista:</label>
+                <input type="text" id="sale-customer-name" value="Doña Remedios - Abarrotes Los Pozos" placeholder="Nombre o Razón Social del Cliente">
               </div>
               <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" value="123456" placeholder="123456">
+                <label for="sale-product-select">Seleccione Producto en Almacén:</label>
+                <select id="sale-product-select">
+                  <option value="">-- Cargando inventario... --</option>
+                </select>
               </div>
-              <button class="btn btn-accent" id="btn-login" style="width: 100%;" onclick="iniciarSesion()">
-                ⚡ Iniciar Sesión y Guardar Token
-              </button>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="sale-quantity">Cantidad de Cajas / Fardos a Despachar:</label>
+                  <input type="number" id="sale-quantity" min="1" value="2">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                  <button class="btn btn-accent" id="btn-process-sale" style="width: 100%;" onclick="registrarVenta()">
+                    ⚡ Procesar Venta Mostrador
+                  </button>
+                </div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--muted); background: #f8fafc; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border);" id="sale-preview-info">
+                Seleccione un ítem para calcular el importe en Bs. y verificar el stock restante.
+              </div>
             </div>
+          </div>
 
-            <div id="user-info-box" style="display: none;">
-              <div style="background: #ecfdf5; padding: 0.95rem; border-radius: 8px; border: 1px solid #a7f3d0; margin-bottom: 0.8rem;">
-                <strong style="color: #065f46;">Operador Activo:</strong> <span id="logged-user">admin</span> (Administrador General)<br>
-                <span style="font-size: 0.75rem; color: var(--muted);">Token JWT activo almacenado en <code>localStorage('jwt_token')</code>. Válido por 2 horas.</span>
-              </div>
-              <button class="btn btn-danger btn-sm" onclick="cerrarSesion()">
-                🚪 Cerrar Sesión (Revocar Token)
-              </button>
+          <!-- REGLA LOGÍSTICA -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">📋 Protocolo de Despacho en Almacén</h2>
+            </div>
+            <div class="card-body" style="font-size: 0.86rem; color: #334155;">
+              <ul style="padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem;">
+                <li><strong>Cero Transportistas:</strong> El cliente mayorista realiza el pago y retira la mercancía directamente en las puertas del almacén central.</li>
+                <li><strong>Transacción ACID Garantizada:</strong> Si dos vendedores intentan despachar el último fardo simultáneamente, la base de datos de Supabase bloquea el sobregiro garantizando consistencia inmutable.</li>
+                <li><strong>Comprobante Oficial:</strong> Se genera una numeración correlativa única (ej. <code>VTA-20261022-0001</code>).</li>
+                <li><strong>Notificación en Tiempo Real:</strong> Cada venta confirmada dispara una alerta instantánea vía Webhook a Slack.</li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <!-- REGLAS RBAC SEGÚN DOMINIO -->
+        <!-- HISTORIAL VENTAS -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">👥 Roles y Permisos RBAC de Oki Doki</h2>
+            <h2 class="card-title">🧾 Historial de Comprobantes de Venta Emitidos</h2>
+            <button class="btn btn-outline btn-sm" onclick="cargarVentasHistorial()">🔄 Actualizar Historial</button>
           </div>
-          <div class="card-body" style="font-size: 0.85rem; color: #334155;">
-            <ul style="padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem;">
-              <li><strong>Administrador:</strong> Acceso completo a compras, catálogo, arqueos, reportes y supervisión general.</li>
-              <li><strong>Cajero/Vendedor:</strong> Operación exclusiva en mostrador de ventas directas con facturación en Bs. y descuento en tiempo real.</li>
-              <li><strong>Encargado de Almacén:</strong> Recepción física de mercaderías de proveedores y verificación de conteos físicos.</li>
-            </ul>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Comprobante</th>
+                    <th>Fecha y Hora</th>
+                    <th>Total Cobrado (Bs.)</th>
+                    <th>Ítems Despachados</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-history-tbody">
+                  <tr><td colspan="6" style="text-align: center; padding: 1.5rem;">Cargando historial de ventas...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- LISTA DE OPERADORES REGISTRADOS -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">📋 Operadores Autorizados del Almacén Central</h2>
-          <button class="btn btn-outline btn-sm" onclick="cargarUsuarios()">🔄 Actualizar</button>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre Completo</th>
-                  <th>Usuario</th>
-                  <th>Rol RBAC</th>
-                  <th>Correo</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody id="users-tbody">
-                <tr><td colspan="6" style="text-align: center; padding: 1.5rem;">Cargando operadores...</td></tr>
-              </tbody>
-            </table>
+      <!-- SECTOR 3: PROVEEDORES Y COMPRAS -->
+      <section class="sector-view" id="sector-compras">
+        <div class="grid-2">
+          <!-- RECEPCIÓN COMPRA -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">📥 Recepción de Mercancía / Reabastecimiento</h2>
+              <span style="font-size: 0.72rem; color: var(--info); font-weight: 700; font-family: monospace;">POST /api/v1/purchases</span>
+            </div>
+            <div class="card-body">
+              <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem;">
+                Registra el ingreso de lotes de fábricas. Incrementa el stock físico y crea un asiento de <strong>ENTRADA</strong> en el Kardex:
+              </p>
+              <div class="form-group">
+                <label for="purchase-supplier-select">Proveedor / Industria Fabricante:</label>
+                <select id="purchase-supplier-select">
+                  <option value="">-- Cargando proveedores... --</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="purchase-invoice">N° Factura / Nota Entrega:</label>
+                  <input type="text" id="purchase-invoice" placeholder="Ej. FAC-99482">
+                </div>
+                <div class="form-group">
+                  <label for="purchase-product-select">Producto a Reabastecer:</label>
+                  <select id="purchase-product-select">
+                    <option value="">-- Seleccione producto --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="purchase-quantity">Cantidad Ingresada (Cajas/Fardos):</label>
+                  <input type="number" id="purchase-quantity" min="1" value="50">
+                </div>
+                <div class="form-group">
+                  <label for="purchase-unit-cost">Costo Unitario Pactado (Bs.):</label>
+                  <input type="number" id="purchase-unit-cost" step="0.5" min="1" value="120.00">
+                </div>
+              </div>
+              <button class="btn btn-success" style="width: 100%;" onclick="registrarCompra()">
+                📥 Registrar Recepción e Incrementar Stock
+              </button>
+            </div>
+          </div>
+
+          <!-- REGISTRO PROVEEDOR -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">🏭 Directorio de Proveedores Mayoristas</h2>
+              <span style="font-size: 0.72rem; color: var(--muted); font-family: monospace;">POST /api/v1/suppliers</span>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="sup-razon">Razón Social o Empresa Fabricante:</label>
+                <input type="text" id="sup-razon" placeholder="Ej. Cervecería Boliviana Nacional S.A.">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="sup-nit">NIT Bolivia:</label>
+                  <input type="text" id="sup-nit" placeholder="Ej. 1029384756">
+                </div>
+                <div class="form-group">
+                  <label for="sup-tel">Teléfono Comercial:</label>
+                  <input type="text" id="sup-tel" placeholder="Ej. 2-2849922">
+                </div>
+              </div>
+              <button class="btn btn-outline" style="width: 100%; border-color: #0284c7; color: #0284c7;" onclick="guardarProveedor()">
+                ➕ Registrar Proveedor Mayorista
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-    </section>
+        <!-- TABLA PROVEEDORES -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🏢 Empresas Proveedoras Autorizadas</h2>
+            <button class="btn btn-outline btn-sm" onclick="cargarProveedores()">🔄 Actualizar</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Razón Social</th>
+                    <th>NIT</th>
+                    <th>Teléfono</th>
+                    <th>Email Comercial</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="suppliers-tbody">
+                  <tr><td colspan="6" style="text-align: center; padding: 1.5rem;">Cargando proveedores...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTOR 5: KARDEX Y AUDITORÍA -->
+      <section class="sector-view" id="sector-kardex">
+        <div class="stats-row">
+          <div class="stat-card">
+            <span class="stat-label">Movimientos Registrados</span>
+            <span class="stat-value" id="stat-kardex-count">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Tipo de Bitácora</span>
+            <span class="stat-value" style="font-size: 1.15rem; color: var(--info);">Inmutable (Append-Only)</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Trazabilidad Forense</span>
+            <span class="stat-value" style="font-size: 1.15rem; color: var(--success);">100% Auditada</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📊 Bitácora Inmutable de Kardex (Trazabilidad de Existencias)</h2>
+            <button class="btn btn-outline btn-sm" onclick="cargarKardex()">🔄 Recargar Bitácora</button>
+          </div>
+          <div class="card-body">
+            <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem;">
+              Cada unidad que ingresa o sale de Oki Doki queda auditada con su fotografía de saldo previo, unidades variadas, saldo final y documento mercantil de respaldo:
+            </p>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Asiento</th>
+                    <th>Tipo</th>
+                    <th>SKU</th>
+                    <th>Producto</th>
+                    <th>Variación</th>
+                    <th>Stock Previo</th>
+                    <th>Stock Final</th>
+                    <th>Comprobante Mercantil</th>
+                    <th>Fecha y Hora</th>
+                  </tr>
+                </thead>
+                <tbody id="kardex-tbody">
+                  <tr><td colspan="9" style="text-align: center; padding: 2rem;">Cargando movimientos de Kardex desde Supabase...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTOR 1: USUARIOS Y ACCESO RBAC -->
+      <section class="sector-view" id="sector-usuarios">
+        <div class="grid-2">
+          <!-- INFORMACIÓN DE SESIÓN ACTIVA -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">🔐 Estado de la Sesión Criptográfica JWT</h2>
+              <span id="session-badge" style="font-size: 0.78rem; font-weight: 700; color: #10b981;">✅ JWT Activo</span>
+            </div>
+            <div class="card-body">
+              <div style="background: #ecfdf5; padding: 1.1rem; border-radius: 8px; border: 1px solid #a7f3d0; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <strong style="color: #065f46; font-size: 1rem;">Operador Autenticado:</strong>
+                  <span style="background: #10b981; color: #fff; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;" id="logged-role-badge">Administrador</span>
+                </div>
+                <div style="font-size: 0.86rem; color: #334155; margin-bottom: 0.3rem;">
+                  Usuario: <strong id="logged-user">admin</strong> (<span id="logged-user-fullname">Administrador General de Almacén</span>)
+                </div>
+                <div style="font-size: 0.75rem; color: var(--muted); font-family: monospace;">
+                  Algoritmo: HS256 • Vigencia: 2 horas • Clave firmada por FastAPI Serverless
+                </div>
+              </div>
+              <button class="btn btn-danger" style="width: 100%;" onclick="cerrarSesion()">
+                🚪 Cerrar Sesión (Revocar Token JWT)
+              </button>
+            </div>
+          </div>
+
+          <!-- DESCRIPCIÓN RBAC -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">👥 Roles y Permisos RBAC de Oki Doki</h2>
+            </div>
+            <div class="card-body" style="font-size: 0.85rem; color: #334155;">
+              <ul style="padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem;">
+                <li><strong>Administrador:</strong> Acceso completo a compras, catálogo, arqueos, reportes y supervisión general.</li>
+                <li><strong>Cajero/Vendedor:</strong> Operación exclusiva en mostrador de ventas directas con facturación en Bs. y descuento en tiempo real.</li>
+                <li><strong>Encargado de Almacén:</strong> Recepción física de mercaderías de proveedores y verificación de conteos físicos.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- LISTA OPERADORES -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📋 Operadores Autorizados del Almacén Central</h2>
+            <button class="btn btn-outline btn-sm" onclick="cargarUsuarios()">🔄 Actualizar Operadores</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre Completo</th>
+                    <th>Usuario</th>
+                    <th>Rol RBAC</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody">
+                  <tr><td colspan="6" style="text-align: center; padding: 1.5rem;">Cargando operadores...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!-- FIN CONTENEDOR ERP -->
 
   </div>
 
@@ -1067,7 +1175,7 @@
       </div>
       <div class="modal-body">
         <p style="font-size: 0.84rem; color: var(--muted); margin-bottom: 1rem;">
-          Este widget permite a docentes y pares evaluadores dejar anotaciones y retroalimentación visual sobre el diseño y la usabilidad del ERP Oki Doki:
+          Este widget permite a docentes y evaluadores dejar anotaciones y retroalimentación visual sobre el diseño y la usabilidad del ERP Oki Doki:
         </p>
         
         <div class="comment-item">

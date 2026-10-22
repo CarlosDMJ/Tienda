@@ -2,7 +2,7 @@
  * ==============================================================================
  * SISTEMA ERP MAYORISTA "OKI DOKI" (DISTRIBOL) - CONTROLADOR FRONTEND MODULAR
  * ==============================================================================
- * 5 SECTORES INDEPENDIENTES:
+ * 5 SECTORES INDEPENDIENTES CON CONTROL DE ACCESO (LOGIN GATEWAY):
  * 1. Sector 1: Usuarios y Roles RBAC (users)
  * 2. Sector 2: Catálogo e Inventario Mayorista (products & 3D Three.js)
  * 3. Sector 3: Proveedores y Compras (suppliers, purchases)
@@ -37,12 +37,10 @@ let scene, camera, renderer, cubeMesh, edgeMesh, orbitControls;
 let isSpinning = true;
 let animFrameId = null;
 
-// Inicialización general
+// Inicialización general al cargar el DOM
 document.addEventListener("DOMContentLoaded", async () => {
-  await verificarEstadoSesion();
-  await cargarProductos();
+  verificarEstadoSesion();
   verificarSaludBackend();
-  initVisor3D();
 
   // Escuchar cambios en selector de venta
   const selectProd = document.getElementById("sale-product-select");
@@ -57,21 +55,179 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 // ==============================================================================
-// NAVEGACIÓN MODULAR ENTRE LOS 5 SECTORES
+// GESTIÓN DE ACCESO Y AUTENTICACIÓN JWT (PANTALLA DE LOGIN)
+// ==============================================================================
+function seleccionarRolDemo(username, password, rolNombre) {
+  const uInput = document.getElementById("username");
+  const pInput = document.getElementById("password");
+  if (uInput) uInput.value = username;
+  if (pInput) pInput.value = password;
+
+  document.querySelectorAll(".btn-role").forEach(btn => btn.classList.remove("active"));
+  if (username === "admin") document.getElementById("role-btn-admin")?.classList.add("active");
+  if (username === "cajero1") document.getElementById("role-btn-cajero")?.classList.add("active");
+  if (username === "almacen1") document.getElementById("role-btn-almacen")?.classList.add("active");
+}
+
+function mostrarPantallaLogin() {
+  const loginGate = document.getElementById("pantalla-login");
+  const erpCont = document.getElementById("contenedor-erp");
+  if (loginGate) loginGate.style.display = "flex";
+  if (erpCont) erpCont.style.display = "none";
+
+  const btnLogin = document.getElementById("btn-header-login");
+  const btnLogout = document.getElementById("btn-header-logout");
+  if (btnLogin) btnLogin.style.display = "none";
+  if (btnLogout) btnLogout.style.display = "none";
+}
+
+async function iniciarSesion() {
+  const usernameInput = document.getElementById("username");
+  const passwordInput = document.getElementById("password");
+  const btnLogin = document.getElementById("btn-login");
+
+  const username = usernameInput ? usernameInput.value.trim() : "admin";
+  const password = passwordInput ? passwordInput.value.trim() : "123456";
+
+  if (!username || !password) {
+    mostrarAlerta("Por favor ingrese usuario y contraseña.", "danger");
+    return;
+  }
+
+  if (btnLogin) {
+    btnLogin.disabled = true;
+    btnLogin.textContent = "⌛ Autenticando con Supabase...";
+  }
+
+  try {
+    const respuesta = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      mostrarAlerta(`❌ Error de acceso: ${data.detail || "Credenciales incorrectas"}`, "danger");
+      return;
+    }
+
+    // Guardar token JWT y datos del usuario
+    localStorage.setItem("jwt_token", data.access_token);
+    localStorage.setItem("jwt_user", username);
+
+    // Decodificar payload básico
+    let userRol = "Operador Autorizado";
+    try {
+      const payloadBase64 = data.access_token.split(".")[1];
+      const payloadObj = JSON.parse(atob(payloadBase64));
+      if (payloadObj.rol) userRol = payloadObj.rol;
+      localStorage.setItem("jwt_role", userRol);
+    } catch (e) {
+      localStorage.setItem("jwt_role", "Administrador");
+    }
+
+    mostrarAlerta(`✅ ¡Bienvenido(a), ${username}! Sesión iniciada con éxito. Token JWT activo (HS256).`, "success");
+
+    // Actualizar vista
+    verificarEstadoSesion();
+    await cargarProductos();
+    initVisor3D();
+    mostrarSector("sector-inventario");
+
+  } catch (error) {
+    mostrarAlerta("No fue posible conectar con el servidor backend.", "danger");
+    console.error("Error en login:", error);
+  } finally {
+    if (btnLogin) {
+      btnLogin.disabled = false;
+      btnLogin.textContent = "⚡ Iniciar Sesión en el ERP Oki Doki";
+    }
+  }
+}
+
+function cerrarSesion() {
+  localStorage.removeItem("jwt_token");
+  localStorage.removeItem("jwt_user");
+  localStorage.removeItem("jwt_role");
+
+  verificarEstadoSesion();
+  mostrarAlerta("🚪 Sesión cerrada correctamente. Token JWT revocado.", "info");
+}
+
+function verificarEstadoSesion() {
+  const token = localStorage.getItem("jwt_token");
+  const user = localStorage.getItem("jwt_user") || "admin";
+  const role = localStorage.getItem("jwt_role") || "Administrador";
+
+  const loginGate = document.getElementById("pantalla-login");
+  const erpCont = document.getElementById("contenedor-erp");
+  const jwtStatusPill = document.getElementById("jwt-status");
+  const btnHeaderLogout = document.getElementById("btn-header-logout");
+  const btnHeaderLogin = document.getElementById("btn-header-login");
+  const loggedUserEl = document.getElementById("logged-user");
+  const loggedRoleBadge = document.getElementById("logged-role-badge");
+
+  if (token) {
+    // Usuario autenticado: mostrar ERP y ocultar pantalla de login
+    if (loginGate) loginGate.style.display = "none";
+    if (erpCont) erpCont.style.display = "block";
+
+    if (jwtStatusPill) {
+      jwtStatusPill.textContent = `Sesión: ${user} (${role})`;
+      jwtStatusPill.style.borderColor = "rgba(16, 185, 129, 0.6)";
+      jwtStatusPill.style.color = "#10b981";
+    }
+    if (btnHeaderLogout) btnHeaderLogout.style.display = "inline-flex";
+    if (btnHeaderLogin) btnHeaderLogin.style.display = "none";
+
+    if (loggedUserEl) loggedUserEl.textContent = user;
+    if (loggedRoleBadge) loggedRoleBadge.textContent = role;
+
+    // Si aún no se cargaron productos, cargarlos e inicializar 3D
+    if (productosCache.length === 0) {
+      cargarProductos();
+      initVisor3D();
+    }
+  } else {
+    // Sin autenticación: mostrar pantalla de login y ocultar ERP
+    if (loginGate) loginGate.style.display = "flex";
+    if (erpCont) erpCont.style.display = "none";
+
+    if (jwtStatusPill) {
+      jwtStatusPill.textContent = "Sesión: Sin Token";
+      jwtStatusPill.style.borderColor = "rgba(245, 158, 11, 0.6)";
+      jwtStatusPill.style.color = "#f59e0b";
+    }
+    if (btnHeaderLogout) btnHeaderLogout.style.display = "none";
+    if (btnHeaderLogin) btnHeaderLogin.style.display = "inline-flex";
+  }
+}
+
+
+// ==============================================================================
+// NAVEGACIÓN MODULAR ENTRE LOS 5 SECTORES DEL ERP
 // ==============================================================================
 function mostrarSector(sectorId) {
-  // Ocultar todos los sectores
+  // Asegurar que el contenedor ERP esté visible
+  const erpCont = document.getElementById("contenedor-erp");
+  const loginGate = document.getElementById("pantalla-login");
+  if (erpCont) erpCont.style.display = "block";
+  if (loginGate) loginGate.style.display = "none";
+
+  // Desactivar otros sectores
   document.querySelectorAll(".sector-view").forEach(sec => sec.classList.remove("active"));
   document.querySelectorAll(".sector-tab").forEach(tab => tab.classList.remove("active"));
 
-  // Activar el sector elegido
+  // Activar sector elegido
   const vistaActiva = document.getElementById(sectorId);
   if (vistaActiva) vistaActiva.classList.add("active");
 
   const tabActiva = document.querySelector(`.sector-tab[data-sector="${sectorId}"]`);
   if (tabActiva) tabActiva.classList.add("active");
 
-  // Cargar datos específicos del sector seleccionado
+  // Cargar datos específicos del sector
   if (sectorId === "sector-inventario") {
     cargarProductos();
     setTimeout(() => {
@@ -191,7 +347,7 @@ async function guardarProducto() {
 
   if (!token) {
     mostrarAlerta("⚠️ Inicie sesión como operador para registrar productos.", "danger");
-    mostrarSector("sector-usuarios");
+    mostrarPantallaLogin();
     return;
   }
 
@@ -229,7 +385,6 @@ async function guardarProducto() {
 
   } catch (error) {
     mostrarAlerta("Error de conexión al guardar el producto.", "danger");
-    console.error("Error:", error);
   }
 }
 
@@ -420,7 +575,7 @@ async function registrarVenta() {
 
   if (!token) {
     mostrarAlerta("⚠️ Se requiere inicio de sesión con Token JWT antes de procesar ventas mayoristas.", "danger");
-    mostrarSector("sector-usuarios");
+    mostrarPantallaLogin();
     return;
   }
 
@@ -551,7 +706,7 @@ async function guardarProveedor() {
 
   if (!token) {
     mostrarAlerta("⚠️ Inicie sesión como operador para registrar proveedores.", "danger");
-    mostrarSector("sector-usuarios");
+    mostrarPantallaLogin();
     return;
   }
   if (!razon || !nit) {
@@ -593,7 +748,7 @@ async function registrarCompra() {
 
   if (!token) {
     mostrarAlerta("⚠️ Inicie sesión como operador para registrar ingresos de compras.", "danger");
-    mostrarSector("sector-usuarios");
+    mostrarPantallaLogin();
     return;
   }
   if (!supId || !prodId || !cant || cant <= 0 || isNaN(costo) || costo <= 0) {
@@ -679,119 +834,8 @@ async function cargarKardex() {
 
 
 // ==============================================================================
-// SECTOR 1: USUARIOS Y AUTENTICACIÓN JWT (users)
+// SECTOR 1: USUARIOS Y OPERADORES (users)
 // ==============================================================================
-async function iniciarSesion() {
-  const usernameInput = document.getElementById("username");
-  const passwordInput = document.getElementById("password");
-  const btnLogin = document.getElementById("btn-login");
-
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  if (!username || !password) {
-    mostrarAlerta("Por favor ingrese usuario y contraseña.", "danger");
-    return;
-  }
-
-  btnLogin.disabled = true;
-  btnLogin.textContent = "⌛ Autenticando...";
-
-  try {
-    const respuesta = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
-
-    const data = await respuesta.json();
-
-    if (!respuesta.ok) {
-      mostrarAlerta(`Error de acceso: ${data.detail || "Credenciales incorrectas"}`, "danger");
-      return;
-    }
-
-    localStorage.setItem("jwt_token", data.access_token);
-    localStorage.setItem("jwt_user", username);
-    localStorage.removeItem("jwt_logged_out");
-
-    mostrarAlerta(`¡Bienvenido, ${username}! Token JWT activo guardado en localStorage.`, "success");
-    await verificarEstadoSesion();
-
-  } catch (error) {
-    mostrarAlerta("No fue posible conectar con el servidor backend.", "danger");
-  } finally {
-    btnLogin.disabled = false;
-    btnLogin.textContent = "⚡ Iniciar Sesión y Guardar Token";
-  }
-}
-
-function cerrarSesion() {
-  localStorage.removeItem("jwt_token");
-  localStorage.removeItem("jwt_user");
-  localStorage.setItem("jwt_logged_out", "true");
-  verificarEstadoSesion();
-  mostrarAlerta("Sesión cerrada. Token JWT eliminado.", "info");
-}
-
-async function verificarEstadoSesion() {
-  let token = localStorage.getItem("jwt_token");
-  let user = localStorage.getItem("jwt_user") || "admin";
-  const loggedOut = localStorage.getItem("jwt_logged_out");
-
-  if (!token && !loggedOut) {
-    try {
-      const resp = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "admin", password: "123456" })
-      });
-      if (resp.ok) {
-        const d = await resp.json();
-        token = d.access_token;
-        user = "admin";
-        localStorage.setItem("jwt_token", token);
-        localStorage.setItem("jwt_user", user);
-      }
-    } catch (e) {
-      console.warn("Auto-login inicial no disponible:", e);
-    }
-  }
-
-  const loginBox = document.getElementById("login-box");
-  const userInfoBox = document.getElementById("user-info-box");
-  const sessionBadge = document.getElementById("session-badge");
-  const jwtStatusPill = document.getElementById("jwt-status");
-  const loggedUser = document.getElementById("logged-user");
-
-  if (token) {
-    if (loginBox) loginBox.style.display = "none";
-    if (userInfoBox) userInfoBox.style.display = "block";
-    if (sessionBadge) {
-      sessionBadge.textContent = "✅ JWT Activo";
-      sessionBadge.style.color = "#10b981";
-    }
-    if (jwtStatusPill) {
-      jwtStatusPill.textContent = `Sesión: ${user} (JWT)`;
-      jwtStatusPill.style.borderColor = "rgba(16, 185, 129, 0.5)";
-      jwtStatusPill.style.color = "#10b981";
-    }
-    if (loggedUser) loggedUser.textContent = user;
-  } else {
-    if (loginBox) loginBox.style.display = "block";
-    if (userInfoBox) userInfoBox.style.display = "none";
-    if (sessionBadge) {
-      sessionBadge.textContent = "Sin Sesión";
-      sessionBadge.style.color = "#f59e0b";
-    }
-    if (jwtStatusPill) {
-      jwtStatusPill.textContent = "Sesión: Sin Token";
-      jwtStatusPill.style.borderColor = "rgba(245, 158, 11, 0.5)";
-      jwtStatusPill.style.color = "#f59e0b";
-    }
-  }
-}
-
 async function cargarUsuarios() {
   const tbody = document.getElementById("users-tbody");
   if (!tbody) return;
@@ -818,7 +862,7 @@ async function cargarUsuarios() {
 
 
 // ==============================================================================
-// INTEGRACIONES DE HERRAMIENTAS (SLACK & COMENTERA)
+// HERRAMIENTAS EXTERNAS (SLACK & COMENTERA)
 // ==============================================================================
 async function probarSlackWebhook() {
   mostrarAlerta("Enviando notificación de prueba al canal de Slack...", "info");
