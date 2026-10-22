@@ -419,5 +419,7 @@ python -m http.server 3000
 
 * **🌐 Frontend en Vercel (Producción):** [https://frontend-rho-sable-26.vercel.app](https://frontend-rho-sable-26.vercel.app)
 * **📊 Panel de Vercel (Despliegues y CI/CD):** [https://vercel.com/web-carl/frontend](https://vercel.com/web-carl/frontend)
+* **🐙 Repositorio Oficial en GitHub:** [https://github.com/CarlosDMJ/Tienda/tree/erp-okidoki](https://github.com/CarlosDMJ/Tienda/tree/erp-okidoki)
+* **⚡ Despliegue Automatizado en Render (1-Click Deploy):** [https://render.com/deploy?repo=https://github.com/CarlosDMJ/Tienda/tree/erp-okidoki](https://render.com/deploy?repo=https://github.com/CarlosDMJ/Tienda/tree/erp-okidoki)
 * **🐘 Base de Datos PostgreSQL en Supabase:** [https://supabase.com/dashboard/project/bqowwqgsmeorgmgjrbgz](https://supabase.com/dashboard/project/bqowwqgsmeorgmgjrbgz)
 * **📑 Documentación Interactiva OpenAPI/Swagger:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
