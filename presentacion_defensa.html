@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defensa de Grado: ERP Mayorista Oki Doki (Distribol) - 20 Diapositivas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --blue: #38bdf8;
+      --green: #10b981;
+      --radius: 14px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .badge {
+      background: var(--accent);
+      color: #000;
+      font-weight: 900;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: -0.5px;
+    }
+    .title-box h1 { font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .title-box p { font-size: 0.72rem; color: var(--muted); }
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .btn {
+      background: #1f2937;
+      color: #fff;
+      border: 1px solid #374151;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn:hover { background: #374151; border-color: var(--accent); }
+    .btn-accent { background: var(--accent); color: #000; font-weight: 700; border: none; }
+    .btn-accent:hover { background: var(--accent-hover); }
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+    .slide-container {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      padding: 2.2rem 2.8rem;
+      min-height: 580px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      animation: fadeIn 0.25s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-header {
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 1rem;
+      margin-bottom: 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .slide-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+    }
+    .slide-body {
+      flex: 1;
+      font-size: 0.96rem;
+      line-height: 1.6;
+      color: #e5e7eb;
+    }
+    .slide-body ul {
+      margin-left: 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+    .slide-body li {
+      margin-bottom: 0.6rem;
+    }
+    .slide-body strong {
+      color: var(--accent);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1rem 0;
+    }
+    .card-box {
+      background: #182234;
+      border: 1px solid #283548;
+      border-radius: 10px;
+      padding: 1.1rem;
+      font-size: 0.88rem;
+    }
+    .card-box h3 {
+      font-size: 0.95rem;
+      color: var(--blue);
+      margin-bottom: 0.6rem;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8rem 0;
+      font-size: 0.82rem;
+    }
+    th, td {
+      border: 1px solid #2d3748;
+      padding: 0.55rem 0.75rem;
+      text-align: left;
+    }
+    th {
+      background: #1e293b;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .speaker-notes-box {
+      margin-top: 1.5rem;
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 4px solid var(--green);
+      padding: 1rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      color: #d1fae5;
+    }
+    .speaker-notes-title {
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 0.35rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    footer {
+      padding: 0.9rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--card-border);
+      background: #0d121f;
+    }
+    @media print {
+      header, footer, .controls, #btn-toggle-notes { display: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+      .slide-container {
+        page-break-after: always;
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        background: #fff !important;
+        color: #000 !important;
+        min-height: auto;
+        padding: 2rem !important;
+      }
+      .slide-title { color: #000 !important; }
+      .slide-body strong { color: #b45309 !important; }
+      .card-box { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #000 !important; }
+      .card-box h3 { color: #0284c7 !important; }
+      .speaker-notes-box { background: #f0fdf4 !important; border-color: #16a34a !important; color: #14532d !important; }
+      th { background: #f1f5f9 !important; color: #000 !important; }
+      td, th { border-color: #cbd5e1 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="badge">OKI DOKI ERP</div>
+      <div class="title-box">
+        <h1>Sustentación de Grado: Diplomado en Tecnologías Informáticas</h1>
+        <p>Postulante: Carlos Daniel Montero Justiniano (19591) • Docente: Ing. Lucy Quintero Gutiérrez</p>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="prevSlide()" id="btn-prev">⬅ Anterior</button>
+      <span class="slide-counter" id="slide-indicator">1 / 20</span>
+      <button class="btn btn-accent" onclick="nextSlide()" id="btn-next">Siguiente ➡</button>
+      <button class="btn" onclick="toggleNotes()" id="btn-toggle-notes">🎙️ Notas Orador</button>
+      <button class="btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="slide-container" id="slide-content">
+      <!-- Se carga dinámicamente con JS -->
+    </div>
+  </main>
+
+  <footer>
+    Santa Cruz de la Sierra, Bolivia • Octubre 2026 • Sistema Desplegado en Vercel: 
+    <a href="https://frontend-rho-sable-26.vercel.app" target="_blank" style="color: var(--accent); text-decoration: none;">frontend-rho-sable-26.vercel.app</a>
+  </footer>
+
+  <script>
+    const slides = [
+      {
+        number: "Diapositiva 01 / 20",
+        title: "Sistema ERP Mayorista de Compra-Venta e Inventario \"Oki Doki\" (Distribol)",
+        body: `
+          <div style="text-align: center; margin: 2rem 0;">
+            <div style="display: inline-block; background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--accent); font-weight: 800; padding: 0.5rem 1.2rem; border-radius: 30px; font-size: 0.95rem; margin-bottom: 1.5rem;">
+              PROYECTO FINAL DE INTEGRACIÓN EMPRESARIAL
+            </div>
+            <p style="font-size: 1.15rem; color: #fff; font-weight: 700; margin-bottom: 0.5rem;">DIPLOMADO EN TECNOLOGÍAS INFORMÁTICAS</p>
+            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 1.8rem;">Módulo: Tecnologías Informáticas</p>
+            <div class="grid-2" style="max-width: 800px; margin: 0 auto; text-align: left;">
+              <div class="card-box">
+                <h3>DOCENTE EVALUADORA</h3>
+                <p><strong>Ing. Lucy Quintero Gutiérrez</strong></p>
+                <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem;">Tribunal Calificador</p>
+              </div>
+              <div class="card-box">
+                <h3>ESTUDIANTE POSTULANTE</h3>
+                <p><strong>Carlos Daniel Montero Justiniano</strong></p>
+                <p style="color: var(--accent); font-size: 0.8rem; margin-top: 0.3rem;">Código: 19591</p>
+              </div>
+            </div>
+          </div>
+        `,
+        speech: "Muy buenos días estimada docente Ing. Lucy Quintero Gutiérrez y miembros del tribunal evaluador. Mi nombre es Carlos Daniel Montero Justiniano, con código de estudiante 19591. Tengo el agrado de presentar la sustentación de grado de nuestro proyecto final: el Sistema ERP Mayorista 'Oki Doki' (Distribol), una solución full-stack en la nube desarrollada con FastAPI, PostgreSQL en Supabase y Vercel, fundamentada en 5 sectores de dominio y la articulación nativa de 6 herramientas tecnológicas de vanguardia."
+      },
+      {
+        number: "Diapositiva 02 / 20",
+        title: "Resumen Ejecutivo y Problemática del Comercio Mayorista",
+        body: `
+          <ul>
+            <li><strong>El Contexto Comercial en Bolivia:</strong> La comercialización mayorista de productos de consumo masivo (abarrotes, aceites, harinas, fideos, azúcar y bebidas) maneja altos volúmenes de capital y flujo físico constante de mercadería en almacén central.</li>
+            <li><strong>Los Problemas Detectados:</strong>
+              <ul>
+                <li><strong>Descuadres de Inventario:</strong> Diferencias graves entre el saldo teórico en hojas de cálculo y las existencias físicas reales en bultos.</li>
+                <li><strong>Sobreventas Simultáneas (Overselling):** Venta de productos agotados cuando dos cajeros atienden pedidos al mismo tiempo.</li>
+                <li><strong>Falta de Trazabilidad en Compras:</strong> Pérdida de control de costos pactados y números de factura de los proveedores.</li>
+                <li><strong>Errores de Redondeo y Divisas:</strong> Inconsistencias contables por no estandarizar la moneda nacional.</li>
+              </ul>
+            </li>
+            <li><strong>Solución ERP Oki Doki:</strong> Arquitectura desacoplada en la nube con tolerancia cero a sobreventas mediante transacciones ACID y auditoría inmutable de movimientos.</li>
+          </ul>
+        `,
+        speech: "El proyecto nació de una necesidad real del mercado comercial boliviano. Las distribuidoras tradicionales operan con cuadernos o plantillas desarticuladas, lo que genera sobreventas y pérdidas financieras. Nuestro propósito fue construir un sistema web empresarial de alta disponibilidad que erradique los descuadres y garantice que cada bulto y cada transacción queden respaldados con rigor matemático."
+      },
+      {
+        number: "Diapositiva 03 / 20",
+        title: "Las 4 Reglas de Negocio Vinculantes de \"Oki Doki\"",
+        body: `
+          <div class="grid-2">
+            <div class="card-box">
+              <h3>1. Unidades de Empaque Cerrado</h3>
+              <p>Manejo estricto por cajas (12/24 uds), fardos (10/20 paquetes) y quintales (50 kg) identificados con código SKU único. <strong>Prohibido el fraccionamiento al menudeo o raleo.</strong></p>
+            </div>
+            <div class="card-box">
+              <h3>2. Moneda Oficial Única</h3>
+              <p>Precios mayoristas, costos de adquisición, subtotales facturados y saldos de Kardex valorizados obligatoriamente en <strong>Bolivianos (Bs.)</strong>.</p>
+            </div>
+            <div class="card-box">
+              <h3>3. Restricción Cero Transportistas</h3>
+              <p>Despacho directo y retiro presencial en mostrador de almacén central. <strong>Prohibido choferes, rutas o camiones de reparto externo.</strong></p>
+            </div>
+            <div class="card-box">
+              <h3>4. Garantía Transaccional ACID</h3>
+              <p>Validación de stock físico en tiempo real. Si no alcanza, el backend aborta la venta completa con <strong>db.rollback()</strong> y código 400 Bad Request.</p>
+            </div>
+          </div>
+        `,
+        speech: "El sistema no permite operaciones al azar: se rige bajo cuatro reglas de negocio estrictas. Destaco que toda la contabilidad se opera en nuestra moneda nacional, los Bolivianos; que las existencias corresponden a empaques cerrados de fábrica; y que el checkout cuenta con una garantía atómica ACID que rechaza de inmediato cualquier intento de sobreventa."
+      },
+      {
+        number: "Diapositiva 04 / 20",
+        title: "Justificación Arquitectónica: ¿Por qué \"Cero Transportistas\"?",
+        body: `
+          <ul>
+            <li><strong>Alineación con el Modelo de Negocio:</strong> \"Oki Doki\" es una distribuidora mayorista de mostrador, concebida para vender bultos cerrados a comerciantes minoristas que retiran personalmente la mercadería.</li>
+            <li><strong>Erradicación de Costos Operativos Innecesarios:</strong>
+              <ul>
+                <li>Sin compra ni mantenimiento de flotas de camiones.</li>
+                <li>Sin gastos en combustibles, seguros de ruta ni planillas de choferes.</li>
+                <li>Eliminación de comisiones de transporte y fletes que encarecen el producto.</li>
+              </ul>
+            </li>
+            <li><strong>Decisión Consciente de Diseño de Software:</strong> Se prohibió explícitamente añadir tablas de conductores, hojas de ruta o transportistas para proteger la simplicidad y la cohesión del dominio de datos.</li>
+          </ul>
+        `,
+        speech: "Ante la posible pregunta del tribunal de por qué el sistema no tiene un módulo de choferes, la respuesta es contundente: no es una omisión, sino una decisión estratégica y consciente de modelo de negocio. 'Oki Doki' opera bajo entrega presencial en almacén central para suprimir fletes de reparto; agregar transportistas habría violado las reglas de la distribuidora y desvirtuado la arquitectura del ERP."
+      },
+      {
+        number: "Diapositiva 05 / 20",
+        title: "Arquitectura Cloud Híbrida y Desacoplada",
+        body: `
+          <ul>
+            <li><strong>Capa Cliente (Frontend):</strong> Servida a través de la red CDN perimetral global de <strong>Vercel</strong> con certificado SSL TLS 1.3 y latencia inferior a 50 ms.</li>
+            <li><strong>Capa de Lógica (Backend API):</strong> <strong>FastAPI</strong> (Python 3.11) ejecutado como microservicios <em>Serverless Functions</em> en Vercel (@vercel/python), escalando automáticamente a demanda y con cero costos en reposo.</li>
+            <li><strong>Capa de Persistencia (Datos):</strong> Base de datos relacional <strong>PostgreSQL 15 en Supabase Cloud</strong> (AWS Ohio), comunicada mediante <strong>SQLAlchemy ORM</strong> y Transaction Pooler IPv4 en puerto 6543.</li>
+            <li><strong>Capa de Notificaciones:</strong> Conexión asíncrona hacia canales operativos de <strong>Slack</strong>.</li>
+          </ul>
+        `,
+        speech: "Rompimos con la arquitectura monolítica tradicional para adoptar un modelo desacoplado en la nube. La interfaz web estática se entrega instantáneamente desde la red perimetral de Vercel; la lógica de negocio se procesa de forma elástica en FastAPI mediante funciones serverless; y la consistencia transaccional se garantiza en PostgreSQL de Supabase. Esto nos brinda alta disponibilidad 24/7 y cero costos de servidor en reposo."
+      },
+      {
+        number: "Diapositiva 06 / 20",
+        title: "Matriz de Integración de las 6 Herramientas del Diplomado",
+        body: `
+          <table>
+            <thead>
+              <tr><th>#</th><th>Herramienta</th><th>Función en el Sistema ERP</th><th>Evidencia en Código</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>1</strong></td><td><strong>Devin AI</strong></td><td>Scaffolding y lógica asíncrona modular</td><td>Controladores fetch() en frontend/app.js</td></tr>
+              <tr><td><strong>2</strong></td><td><strong>Slack</strong></td><td>Alertas operativas inmediatas en tiempo real</td><td>Función notificar_slack() en main.py</td></tr>
+              <tr><td><strong>3</strong></td><td><strong>Vercel</strong></td><td>Hosting CDN global y Serverless Python CI/CD</td><td>frontend/vercel.json (@vercel/python)</td></tr>
+              <tr><td><strong>4</strong></td><td><strong>Comentera</strong></td><td>Widget de feedback visual y auditoría docente</td><td>Script widget.js en frontend/index.html</td></tr>
+              <tr><td><strong>5</strong></td><td><strong>Three.js</strong></td><td>Visualizador 3D WebGL interactivo de cubicaje</td><td>OrbitControls y geometrías en app.js</td></tr>
+              <tr><td><strong>6</strong></td><td><strong>Supabase</strong></td><td>Base de datos PostgreSQL relacional ACID</td><td>Engine SQLAlchemy en database.py</td></tr>
+            </tbody>
+          </table>
+        `,
+        speech: "Cumplimos de forma rigurosa con la totalidad de herramientas exigidas en el diplomado. No fueron adiciones decorativas: cada tecnología cumple una función indispensable dentro del ecosistema del ERP, complementando el diseño asistido por IA, la observabilidad operativa en Slack y la persistencia relacional en Supabase."
+      },
+      {
+        number: "Diapositiva 07 / 20",
+        title: "Herramientas 1 & 3: Devin AI y Vercel (Ingeniería y Serverless)",
+        body: `
+          <div class="grid-2">
+            <div class="card-box">
+              <h3>Herramienta 1: Devin AI</h3>
+              <ul>
+                <li>Asistente autónomo de ingeniería utilizado para acelerar la maquetación.</li>
+                <li>Generación del controlador modular <code>frontend/app.js</code> sin frameworks pesados (Vanilla JS de alto rendimiento).</li>
+                <li>Estandarización de llamadas Fetch con manejo seguro de tokens JWT en <code>localStorage</code>.</li>
+              </ul>
+            </div>
+            <div class="card-box">
+              <h3>Herramienta 3: Vercel</h3>
+              <ul>
+                <li>Pipeline CI/CD conectado a la rama <code>erp-okidoki</code> de GitHub.</li>
+                <li>Configuración híbrida en <code>vercel.json</code>: compila estáticos y mapea <code>/api/(.*)</code> al backend Python en <code>api/index.py</code>.</li>
+                <li>Certificado SSL TLS 1.3 automático y protección perimetral contra ataques DDoS.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        speech: "Utilizamos Devin AI como acelerador de ingeniería para generar una base de código JavaScript limpia, modular y sin dependencias pesadas. Para el despliegue, Vercel automatiza el pipeline de integración continua desde GitHub, ejecutando tanto los archivos visuales como nuestro backend en Python sin necesidad de configurar servidores Linux dedicados."
+      },
+      {
+        number: "Diapositiva 08 / 20",
+        title: "Herramientas 2 & 4: Slack Webhooks y Comentera",
+        body: `
+          <div class="grid-2">
+            <div class="card-box">
+              <h3>Herramienta 2: Slack Webhook</h3>
+              <ul>
+                <li>Integración HTTP POST hacia el canal operativo <strong>#alertas-erp</strong>.</li>
+                <li>Notificación automática tras cada venta confirmada (comprobante, cajero, monto en Bs. y productos).</li>
+                <li>Alerta de emergencia cuando un producto desciende a stock crítico (&le; 10 unidades).</li>
+              </ul>
+            </div>
+            <div class="card-box">
+              <h3>Herramienta 4: Comentera</h3>
+              <ul>
+                <li>Script interactivo incrustado en el DOM con identificador <code>okidoki-erp-bolivia</code>.</li>
+                <li>Canal colaborativo de retroalimentación directa para la docente <strong>Ing. Lucy Quintero Gutiérrez</strong>.</li>
+                <li>Permite fijar comentarios y observaciones visuales sobre cualquier sección de la interfaz en producción.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        speech: "La observabilidad del negocio se delegó a Slack: la gerencia recibe en tiempo real el detalle de cada comprobante emitido y las alertas de reposición inmediata. Por su parte, la integración de Comentera permite a la Ing. Lucy Quintero y al tribunal evaluar la interfaz y dejar comentarios visuales anclados a cualquier elemento de la pantalla."
+      },
+      {
+        number: "Diapositiva 09 / 20",
+        title: "Herramientas 5 & 6: Three.js y Supabase PostgreSQL",
+        body: `
+          <div class="grid-2">
+            <div class="card-box">
+              <h3>Herramienta 5: Three.js WebGL</h3>
+              <ul>
+                <li>Canvas 3D interactivo con <code>OrbitControls</code>, luces de estudio y texturas.</li>
+                <li>Simulación matemática de cubicaje: renderiza cajas de aceite, fardos de arroz o quintales con rotación orbital 360°.</li>
+                <li>Ayuda al cliente y al cajero a calcular el espacio de estiba requerido antes del retiro físico.</li>
+              </ul>
+            </div>
+            <div class="card-box">
+              <h3>Herramienta 6: Supabase Cloud</h3>
+              <ul>
+                <li>Motor relacional <strong>PostgreSQL 15</strong> con llaves foráneas y borrado en cascada.</li>
+                <li>Garantía de transacciones atómicas ACID (soporte de <code>db.flush()</code>, <code>db.commit()</code> y <code>db.rollback()</code>).</li>
+                <li>Connection Pooler IPv4 para absorber ráfagas concurrentes de peticiones sin agotar conexiones.</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        speech: "En el rubro mayorista, el factor volumétrico es determinante. Incorporamos Three.js para que el operador y el cliente verifiquen el cubicaje y las dimensiones de estiba de la carga antes de retirarla. En el almacenamiento, Supabase nos otorga la garantía de un motor PostgreSQL 15 con llaves foráneas estrictas e integridad referencial."
+      },
+      {
+        number: "Diapositiva 10 / 20",
+        title: "Modelo de Dominio: Diagrama Entidad-Relación (DER)",
+        body: `
+          <ul>
+            <li><strong>users (1:N) con sales, purchases e inventory_movements:</strong> Trazabilidad del operador responsable en cada acción.</li>
+            <li><strong>suppliers (1:N) con purchases (1:N) purchase_items:</strong> Abastecimiento mayorista y desglose de ítems por factura fiscal.</li>
+            <li><strong>customers (1:N) con sales (1:N) sale_items:</strong> Facturación en mostrador y detalle de mercadería despachada.</li>
+            <li><strong>products (1:N) con purchase_items, sale_items e inventory_movements:</strong> Núcleo central que articula compras, ventas y kardex inmutable.</li>
+            <li><strong>Normalización 3NF:</strong> Eliminación de anomalías de inserción, actualización y borrado.</li>
+          </ul>
+        `,
+        speech: "El modelo de datos se estructuró bajo la tercera forma normal, asegurando que no existan redundancias ni anomalías de actualización. La tabla de productos actúa como nodo central que articula las compras a proveedores, las ventas a clientes y el registro cronológico del kardex."
+      },
+      {
+        number: "Diapositiva 11 / 20",
+        title: "Sector 1: Usuarios, Roles RBAC y Criptografía JWT",
+        body: `
+          <ul>
+            <li><strong>Control de Acceso Basado en Roles (RBAC):</strong>
+              <ul>
+                <li><code>Administrador</code>: Acceso total al catálogo, compras, reportes y auditoría forense.</li>
+                <li><code>Cajero/Vendedor</code>: Atención en mostrador, emisión de comprobantes en Bs. y consulta de stock.</li>
+                <li><code>Encargado de Almacén</code>: Recepción de lotes de proveedores, ajustes y umbrales de stock mínimo.</li>
+              </ul>
+            </li>
+            <li><strong>Seguridad de Credenciales:</strong> Contraseñas resguardadas con hash seguro; validación de estado activo del operador.</li>
+            <li><strong>Protocolo JWT (HS256):</strong> Emisión de token Bearer con expiración a 2 horas (RFC 7519) verificado en cada llamada protegida.</li>
+            <li><strong>Login Gateway:</strong> Interfaz con selector rápido de roles para facilitar pruebas y auditoría académica.</li>
+          </ul>
+        `,
+        speech: "El Sector 1 gobierna el control de accesos mediante un Login Gateway seguro. Cada operador recibe un token JWT firmado criptográficamente. El sistema valida los permisos en cada endpoint, garantizando que un cajero solo pueda emitir ventas y consultar existencias, impidiendo modificaciones no autorizadas en costos o configuraciones maestras."
+      },
+      {
+        number: "Diapositiva 12 / 20",
+        title: "Sector 2: Catálogo e Inventario Mayorista en Bolivianos (Bs.)",
+        body: `
+          <ul>
+            <li><strong>Catálogo Maestro Precargado (Empresas Bolivianas):</strong>
+              <ul>
+                <li><code>ACE-001</code>: Caja Aceite Fino 1L (12 uds) — Costo: Bs. 125.00 | Venta: Bs. 150.00</li>
+                <li><code>ARR-010</code>: Fardo Arroz Grano de Oro 10kg — Costo: Bs. 70.00 | Venta: Bs. 85.50</li>
+                <li><code>AZU-050</code>: Quintal Azúcar Guabirá 50kg — Costo: Bs. 185.00 | Venta: Bs. 210.00</li>
+                <li><code>FID-004</code>: Fardo Fideo Famosa (20 uds) — Costo: Bs. 60.00 | Venta: Bs. 74.00</li>
+                <li><code>PIL-005</code>: Caja Leche Evaporada PIL (24 latas) — Costo: Bs. 170.00 | Venta: Bs. 192.00</li>
+                <li><code>BEB-006</code>: Pack Refresco Coca-Cola 2L (8 botellas) — Costo: Bs. 55.00 | Venta: Bs. 68.00</li>
+                <li><code>LIM-008</code>: Caja Detergente OMO 800g (18 uds) — Costo: Bs. 135.00 | Venta: Bs. 158.00</li>
+              </ul>
+            </li>
+            <li><strong>Validación Comercial:</strong> Regla estricta <code>precio_venta > precio_compra > 0</code> y existencia física &ge; 0.</li>
+            <li><strong>Alerta de Seguridad:</strong> Badges visuales en color ámbar y rojo cuando <code>stock &le; 10</code> unidades.</li>
+          </ul>
+        `,
+        speech: "El Sector 2 gestiona los bultos cerrados de las industrias más prestigiosas del país. Cada ítem posee un código SKU irrepetible y un umbral mínimo de reposición. Si el stock cae a 10 unidades o menos, el catálogo resalta el producto en color ámbar y notifica a Slack para ordenar su reabastecimiento inmediato."
+      },
+      {
+        number: "Diapositiva 13 / 20",
+        title: "Sector 3: Proveedores y Compras de Abastecimiento",
+        body: `
+          <ul>
+            <li><strong>Proveedores Formales de Bolivia:</strong>
+              <ul>
+                <li>Industrias de Aceite Fino S.A. (NIT: 1020304050) — Santa Cruz</li>
+                <li>Ingenio Azucarero Guabirá S.A. (NIT: 1028374958) — Montero</li>
+                <li>PIL Andina S.A. (NIT: 1019283746) — Cochabamba</li>
+                <li>Fábrica de Fideos Famosa S.A. (NIT: 1039485721) — Santa Cruz</li>
+                <li>Embotelladoras Bolivianas Unidas EMBOL S.A. (NIT: 1019284759) — La Paz</li>
+              </ul>
+            </li>
+            <li><strong>Efecto Transaccional Inmediato al Recepcionar Factura:</strong>
+              <ol>
+                <li>Registro del número de factura fiscal y monto total pactado en Bs.</li>
+                <li>Incremento síncrono del stock físico: <code>stock = stock + cantidad_comprada</code>.</li>
+                <li>Actualización del costo unitario del producto en catálogo (<code>cost_price</code>).</li>
+                <li>Generación automática del asiento de <strong>ENTRADA</strong> en el Kardex.</li>
+              </ol>
+            </li>
+          </ul>
+        `,
+        speech: "El Sector 3 formaliza la cadena de suministros con registro de facturación legal boliviana. Al registrar una compra, el inventario se actualiza de inmediato, se ajusta el costo de adquisición del producto y se crea el correspondiente comprobante de entrada en la bitácora de auditoría."
+      },
+      {
+        number: "Diapositiva 14 / 20",
+        title: "Sector 4: Ventas Mostrador con Garantía Atómica ACID",
+        body: `
+          <ul>
+            <li><strong>Venta Exclusiva en Mostrador:</strong> Cliente retira presencialmente el pedido tras cobro de caja.</li>
+            <li><strong>Algoritmo Atómico de Venta (Erradicación de Overselling):</strong>
+              <ol>
+                <li>Apertura de transacción atómica mediante <code>db.begin()</code>.</li>
+                <li>Validación previa de stock en tiempo real: ¿<code>stock_actual &ge; cantidad_solicitada</code>?</li>
+                <li><strong>Si falta stock:</strong> Se dispara <code>db.rollback()</code> inmediato, respondiendo error <code>400 Bad Request</code> con el faltante específico. <strong>Ningún producto se descuenta.</strong></li>
+                <li><strong>Si hay disponibilidad:</strong>
+                  <ul>
+                    <li>Descuento inmediato de existencias físicas.</li>
+                    <li>Emisión del comprobante correlativo (ej. <code>VTA-20241021-0001</code>).</li>
+                    <li>Registro síncrono del movimiento de <strong>SALIDA</strong> en el Kardex.</li>
+                    <li>Consolidación con <code>db.commit()</code> y disparo de notificación a Slack.</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+          </ul>
+        `,
+        speech: "En el Sector 4 radica la solidez operativa del sistema. Si múltiples cajeros atienden simultáneamente en el mostrador, el backend garantiza aislamiento transaccional estricto. Si no hay existencia física suficiente para abastecer la orden completa, el cobro se cancela en su totalidad, erradicando el riesgo de sobreventas y descuadres de caja."
+      },
+      {
+        number: "Diapositiva 15 / 20",
+        title: "Sector 5: Kardex e Inmutabilidad Forense de Auditoría",
+        body: `
+          <ul>
+            <li><strong>Principio Append-Only (Solo Inserción):</strong> Queda terminantemente prohibida cualquier modificación (<code>UPDATE</code>) o eliminación (<code>DELETE</code>) sobre la tabla <code>inventory_movements</code>.</li>
+            <li><strong>Fotografía de Estado Matemática:</strong>
+              <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--blue); padding: 0.8rem; border-radius: 8px; text-align: center; margin: 0.8rem 0; font-family: 'JetBrains Mono', monospace;">
+                Cantidad Previa &plusmn; Cantidad Movimiento = Cantidad Final
+              </div>
+            </li>
+            <li><strong>Tipos de Movimientos Registrados:</strong>
+              <ul>
+                <li><code>ENTRADA</code>: Compras confirmadas de proveedores (suma al inventario).</li>
+                <li><code>SALIDA</code>: Ventas consolidadas en mostrador (resta del inventario).</li>
+                <li><code>AJUSTE</code>: Arqueos físicos, mermas o roturas justificadas por Almacén.</li>
+              </ul>
+            </li>
+            <li><strong>Respaldo Documental:</strong> Cada registro incluye glosa vinculante (ej. <code>VENTA VTA-20241021-0001</code> o <code>COMPRA FAC-88412</code>).</li>
+          </ul>
+        `,
+        speech: "El Sector 5 proporciona trazabilidad forense absoluta. Cada movimiento de mercancía genera un registro inmutable con marca de tiempo UTC y documento de respaldo legal. La ecuación matemática garantiza que el inventario teórico coincida con el inventario físico en cualquier arqueo de almacén."
+      },
+      {
+        number: "Diapositiva 16 / 20",
+        title: "Ciberseguridad e Integridad de Datos por Diseño",
+        body: `
+          <ul>
+            <li><strong>Mitigación Absoluta de Inyección SQL:</strong> Cero sentencias SQL concatenadas manualmente. El 100% de consultas son procesadas y parametrizadas por <strong>SQLAlchemy ORM</strong>.</li>
+            <li><strong>Validación Estricta de Esquemas con Pydantic v2:</strong> Sanitización previa de tipos de datos, rechazo de campos espurios y prevención de desbordamientos numéricos (respuesta <code>422 Unprocessable Entity</code>).</li>
+            <li><strong>Control Perimetral CORS:</strong> Cabeceras restrictivas que garantizan la comunicación segura entre el dominio de Vercel y el backend.</li>
+            <li><strong>Aislamiento Criptográfico de Secretos:</strong>
+              <ul>
+                <li>Cadenas de conexión a Supabase protegidas en variables de entorno (<code>.env</code>).</li>
+                <li>Firma criptográfica de tokens JWT con clave secreta fuera del código fuente.</li>
+              </ul>
+            </li>
+          </ul>
+        `,
+        speech: "La ciberseguridad fue implementada por diseño en cada capa del software. Al utilizar SQLAlchemy ORM eliminamos por completo cualquier riesgo de inyección SQL. Pydantic filtra y valida cada parámetro de entrada, y las credenciales críticas de Supabase y Slack permanecen estrictamente cifradas y aisladas del cliente."
+      },
+      {
+        number: "Diapositiva 17 / 20",
+        title: "Calidad de Software: Suite de Pruebas Automatizadas",
+        body: `
+          <table>
+            <thead>
+              <tr><th>Caso de Prueba Auditado</th><th>Criterio Técnico Evaluado</th><th>Resultado</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>test_login_valido_admin</code></td><td>Emisión de token JWT válido con payload correcto</td><td>🟢 <strong>APROBADO</strong></td></tr>
+              <tr><td><code>test_login_credenciales_invalidas</code></td><td>Respuesta 401 Unauthorized ante password errónea</td><td>🟢 <strong>APROBADO</strong></td></tr>
+              <tr><td><code>test_rutas_protegidas_sin_token</code></td><td>Bloqueo perimetral a usuarios anónimos</td><td>🟢 <strong>APROBADO</strong></td></tr>
+              <tr><td><code>test_venta_exitosa_descuento_stock</code></td><td>Descuento exacto de unidades y creación en Kardex</td><td>🟢 <strong>APROBADO</strong></td></tr>
+              <tr><td><code>test_venta_rechazada_stock_insuficiente</code></td><td>Bloqueo transaccional preventivo 400 Bad Request</td><td>🟢 <strong>APROBADO</strong></td></tr>
+              <tr><td><code>test_rollback_atomico_acid</code></td><td>Existencias intactas tras abortar venta por falta de stock</td><td>🟢 <strong>APROBADO</strong></td></tr>
+              <tr><td><code>test_balance_matematico_kardex</code></td><td>Cumplimiento estricto: Previa &plusmn; Cantidad = Final</td><td>🟢 <strong>APROBADO</strong></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--green);"><strong>Resultado Verificado: 7 de 7 pruebas unitarias e integrales superadas con éxito (100% de aprobación).</strong></p>
+        `,
+        speech: "Para certificar la calidad del software, construimos una suite automatizada en test_api.py. Sometimos la API a condiciones extremas: intentos de sobreventa, accesos con contraseñas incorrectas y balances de inventario. La totalidad de las pruebas fueron aprobadas con cero fallos, certificando la estabilidad del sistema."
+      },
+      {
+        number: "Diapositiva 18 / 20",
+        title: "Demostración en Vivo en Producción (Live Demo)",
+        body: `
+          <ul>
+            <li><strong>Entorno de Producción en Vivo:</strong> <a href="https://frontend-rho-sable-26.vercel.app" target="_blank" style="color: var(--blue);">https://frontend-rho-sable-26.vercel.app</a></li>
+            <li><strong>Recorrido del Flujo Operativo en Tiempo Real:</strong>
+              <ol>
+                <li><strong>Acceso:</strong> Inicio de sesión como <code>admin</code> mediante el Login Gateway.</li>
+                <li><strong>Catálogo 3D:</strong> Selección de la Caja de Aceite Fino e interacción con el visor Three.js con rotación 360°.</li>
+                <li><strong>Transacción de Venta:</strong> Cobro de 5 cajas de Aceite Fino a Doña Remedios por Bs. 750.00.</li>
+                <li><strong>Observabilidad:</strong> Comprobación de la alerta automática en el canal de Slack.</li>
+                <li><strong>Auditoría de Kardex:</strong> Verificación del nuevo asiento de <code>SALIDA</code> con saldo final actualizado en Supabase.</li>
+              </ol>
+            </li>
+          </ul>
+        `,
+        speech: "Invito cordialmente a la docente evaluadora Ing. Lucy Quintero Gutiérrez y al tribunal a ingresar al enlace en producción. Realizaremos una prueba en tiempo real: registraremos una venta de mostrador y verificaremos cómo el stock se descuenta en vivo en Supabase, se dispara la notificación al canal de Slack y se genera el registro inmutable en el Kardex."
+      },
+      {
+        number: "Diapositiva 19 / 20",
+        title: "Banco de Respuestas para la Sustentación Oral",
+        body: `
+          <div class="grid-2">
+            <div class="card-box">
+              <h3>P1: ¿Por qué no incluyeron transportistas?</h3>
+              <p>Oki Doki opera bajo entrega presencial en almacén para eliminar costos de flete. Añadir transportistas violaría el modelo de negocio del proyecto.</p>
+            </div>
+            <div class="card-box">
+              <h3>P2: ¿Cómo evitan el overselling entre cajeros?</h3>
+              <p>Con transacciones atómicas ACID y bloqueo en SQLAlchemy. Si un cajero consume el saldo remanente, la transacción concurrente aborta con rollback arrojando HTTP 400.</p>
+            </div>
+            <div class="card-box">
+              <h3>P3: ¿Qué utilidad tiene Three.js en un ERP?</h3>
+              <p>Permite visualizar el cubicaje y las dimensiones de estiba de cajas, fardos y quintales antes de que el cliente retire la carga física de almacén.</p>
+            </div>
+            <div class="card-box">
+              <h3>P4: ¿Por qué Serverless en Vercel?</h3>
+              <p>Garantiza escalabilidad elástica automática, disponibilidad global mediante CDN perimetral y cero costos de mantenimiento de servidores en reposo.</p>
+            </div>
+          </div>
+        `,
+        speech: "Cada decisión de diseño adoptada en este proyecto responde a fundamentos técnicos, económicos y de arquitectura de software debidamente fundamentados, listos para respaldar la viabilidad del ERP ante cualquier interrogante del tribunal."
+      },
+      {
+        number: "Diapositiva 20 / 20",
+        title: "Conclusiones, Impacto Académico y Cierre",
+        body: `
+          <ul>
+            <li><strong>Conclusiones Técnicas del Proyecto:</strong>
+              <ul>
+                <li>✅ Cumplimiento pleno del 100% de las <strong>6 herramientas tecnológicas</strong> del diplomado.</li>
+                <li>✅ Implementación rigurosa de los <strong>5 sectores de dominio</strong> en base de datos PostgreSQL.</li>
+                <li>✅ Erradicación total de sobreventas mediante transacciones ACID y trazabilidad inmutable de Kardex.</li>
+                <li>✅ Despliegue en la nube con alta disponibilidad 24/7 y seguridad criptográfica JWT.</li>
+              </ul>
+            </li>
+            <li><strong>Agradecimiento Institucional:</strong> A la docente <strong>Ing. Lucy Quintero Gutiérrez</strong> por su exigencia metodológica y enriquecedoras orientaciones académicas a lo largo del módulo.</li>
+            <li><strong>Apertura de Sesión:</strong> Carlos Daniel Montero Justiniano queda a disposición del tribunal examinador para la ronda de preguntas.</li>
+          </ul>
+        `,
+        speech: "Para concluir: el Sistema ERP Mayorista 'Oki Doki' demuestra que una arquitectura moderna en la nube combinada con buenas prácticas de ingeniería y transacciones relacionales estrictas permite solucionar problemas críticos del comercio boliviano. Expreso mi sincero agradecimiento a la Ing. Lucy Quintero Gutiérrez por sus valiosas orientaciones a lo largo del módulo. Quedo a su entera disposición para responder a sus preguntas. Muchas gracias."
+      }
+    ];
+
+    let currentSlide = 0;
+    let showNotes = true;
+
+    function renderSlide() {
+      const slide = slides[currentSlide];
+      const container = document.getElementById("slide-content");
+      document.getElementById("slide-indicator").innerText = `${currentSlide + 1} / ${slides.length}`;
+      document.getElementById("btn-prev").disabled = (currentSlide === 0);
+      document.getElementById("btn-next").disabled = (currentSlide === slides.length - 1);
+
+      container.innerHTML = `
+        <div class="slide-header">
+          <div>
+            <div class="slide-number">${slide.number}</div>
+            <h2 class="slide-title">${slide.title}</h2>
+          </div>
+        </div>
+        <div class="slide-body">
+          ${slide.body}
+        </div>
+        <div class="speaker-notes-box" id="speaker-box" style="display: ${showNotes ? 'block' : 'none'};">
+          <div class="speaker-notes-title">🎙️ Speech del Expositor (Guión para el tribunal):</div>
+          <p style="font-style: italic;">"${slide.speech}"</p>
+        </div>
+      `;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        renderSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide();
+      }
+    }
+
+    function toggleNotes() {
+      showNotes = !showNotes;
+      const box = document.getElementById("speaker-box");
+      if (box) box.style.display = showNotes ? 'block' : 'none';
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") nextSlide();
+      if (e.key === "ArrowLeft" || e.key === "PageUp") prevSlide();
+    });
+
+    renderSlide();
+  </script>
+</body>
+</html>

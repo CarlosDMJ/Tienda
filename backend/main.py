@@ -394,7 +394,7 @@ def receive_purchase(
         for it in items_to_save:
             p_item = models.PurchaseItem(
                 purchase_id=db_purchase.id,
-                product_id=it["product"]["id"],
+                product_id=it["product"].id,
                 quantity=it["quantity"],
                 unit_price=it["unit_price"],
                 subtotal=it["subtotal"]
@@ -403,7 +403,7 @@ def receive_purchase(
 
             # Asiento Kardex ENTRADA (Sector 5)
             kardex_mov = models.InventoryMovement(
-                product_id=it["product"]["id"],
+                product_id=it["product"].id,
                 user_id=user_id,
                 movement_type="ENTRADA",
                 quantity=it["quantity"],
