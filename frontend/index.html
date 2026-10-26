@@ -584,7 +584,7 @@
       <button class="btn-slack-header" style="background: #0284c7; border-color: #0369a1;" onclick="abrirModalComentera()" title="Feedback y revisión docente">
         <span>💬</span> Comentera (Herramienta 4)
       </button>
-      <div class="pill-info" id="api-status">API: Conectando...</div>
+      <div class="pill-info" id="api-status" onclick="configurarApiUrl()" style="cursor: pointer;" title="Clic para configurar o ver URL del Backend">API: Conectando...</div>
       <div class="pill-info" id="jwt-status">Sesión: Sin Token</div>
       <button class="btn btn-danger btn-sm" id="btn-header-logout" onclick="cerrarSesion()" style="display: none;">
         🚪 Cerrar Sesión
@@ -614,7 +614,7 @@
         </div>
         <div class="login-body">
           <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.9rem;">
-            Seleccione una cuenta de operador autorizada o escriba sus credenciales:
+            Seleccione una cuenta de operador autorizada o use el acceso rápido:
           </p>
           
           <!-- SELECTOR RÁPIDO DE LOS 3 ROLES -->
@@ -639,6 +639,15 @@
                 <strong>Almacén</strong>
                 <small>almacen1</small>
               </div>
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.9rem;">
+            <button type="button" class="btn btn-sm btn-outline" style="flex: 1; border-color: var(--accent); color: var(--accent-hover); font-weight: 700;" onclick="accesoRapidoDemo('admin')">
+              ⚡ Entrar Rápido (Admin)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" style="flex: 1;" onclick="explorarModoDemo()">
+              👁️ Modo Explorador
             </button>
           </div>
 
@@ -673,42 +682,42 @@
 
       <!-- BARRA RESUMEN DE INTEGRACIÓN DE LAS 6 HERRAMIENTAS -->
       <div class="tools-bar">
-        <div class="tool-chip">
+        <div class="tool-chip" style="cursor: pointer;" onclick="mostrarDetalleHerramienta('devin')" title="Clic para ver detalles de Devin AI">
           <span class="chip-icon">🤖</span>
           <div>
             <strong>1. Devin AI</strong>
             <span>Boilerplate & Lógica</span>
           </div>
         </div>
-        <div class="tool-chip" style="cursor: pointer;" onclick="probarSlackWebhook()">
+        <div class="tool-chip" style="cursor: pointer;" onclick="probarSlackWebhook()" title="Clic para enviar alerta de prueba a Slack">
           <span class="chip-icon">🔔</span>
           <div>
             <strong>2. Slack</strong>
             <span>Alertas Webhook</span>
           </div>
         </div>
-        <div class="tool-chip">
+        <div class="tool-chip" style="cursor: pointer;" onclick="mostrarDetalleHerramienta('vercel')" title="Clic para ver detalles de Vercel">
           <span class="chip-icon">▲</span>
           <div>
             <strong>3. Vercel</strong>
             <span>Fullstack Serverless</span>
           </div>
         </div>
-        <div class="tool-chip" style="cursor: pointer;" onclick="abrirModalComentera()">
+        <div class="tool-chip" style="cursor: pointer;" onclick="abrirModalComentera()" title="Clic para abrir feedback de Comentera">
           <span class="chip-icon">💬</span>
           <div>
             <strong>4. Comentera</strong>
             <span>Feedback Docente</span>
           </div>
         </div>
-        <div class="tool-chip" style="cursor: pointer;" onclick="mostrarSector('sector-inventario')">
+        <div class="tool-chip" style="cursor: pointer;" onclick="mostrarSector('sector-inventario')" title="Clic para ver modelos 3D con Three.js">
           <span class="chip-icon">📦</span>
           <div>
             <strong>5. Gráficos 3D</strong>
             <span>Three.js Canvas</span>
           </div>
         </div>
-        <div class="tool-chip">
+        <div class="tool-chip" style="cursor: pointer;" onclick="mostrarDetalleHerramienta('supabase')" title="Clic para ver detalles de Supabase DB">
           <span class="chip-icon">⚡</span>
           <div>
             <strong>6. Supabase DB</strong>

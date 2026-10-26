@@ -14,16 +14,22 @@
  * ==============================================================================
  */
 
-// Detección automática de entorno: Localhost vs Vercel Serverless
+// Detección automática y resiliente de entorno: Localhost vs Vercel Serverless
+const PRODUCTION_API = "https://frontend-rho-sable-26.vercel.app/api/v1";
 const DEFAULT_LOCAL_API = "http://127.0.0.1:8000/api/v1";
 
 function obtenerApiUrl() {
   const custom = localStorage.getItem("custom_api_url");
   if (custom) return custom.replace(/\/+$/, "");
-  if ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && window.location.port === "3000") {
-    return DEFAULT_LOCAL_API;
+
+  // En Vercel Serverless (mismo dominio en la nube), usar ruta relativa
+  if (window.location.hostname.includes("vercel.app")) {
+    return "/api/v1";
   }
-  return "/api/v1";
+
+  // En entorno local (XAMPP localhost, 127.0.0.1 o archivo directo file:///)
+  // Conectar por defecto a la API en la nube para que todo funcione sin requerir servidor local
+  return PRODUCTION_API;
 }
 
 const API_URL = obtenerApiUrl();
@@ -67,6 +73,51 @@ function seleccionarRolDemo(username, password, rolNombre) {
   if (username === "admin") document.getElementById("role-btn-admin")?.classList.add("active");
   if (username === "cajero1") document.getElementById("role-btn-cajero")?.classList.add("active");
   if (username === "almacen1") document.getElementById("role-btn-almacen")?.classList.add("active");
+}
+
+async function accesoRapidoDemo(rol) {
+  if (rol === "cajero1") {
+    seleccionarRolDemo("cajero1", "123456", "Cajero/Vendedor");
+  } else if (rol === "almacen1") {
+    seleccionarRolDemo("almacen1", "123456", "Encargado de Almacén");
+  } else {
+    seleccionarRolDemo("admin", "123456", "Administrador");
+  }
+  await iniciarSesion();
+}
+
+function explorarModoDemo() {
+  localStorage.setItem("jwt_token", "demo_guest_token_okidoki");
+  localStorage.setItem("jwt_user", "invitado");
+  localStorage.setItem("jwt_role", "Invitado/Demo");
+  verificarEstadoSesion();
+  cargarProductos();
+  initVisor3D();
+  mostrarSector("sector-inventario");
+  mostrarAlerta("👁️ Modo Explorador activado. Todos los sectores y el visor 3D están desbloqueados.", "info");
+}
+
+function configurarApiUrl() {
+  const actual = localStorage.getItem("custom_api_url") || API_URL;
+  const nueva = prompt("Configure la URL de su API FastAPI (ej. desplegada en Vercel, Render o local):", actual);
+  if (nueva !== null && nueva.trim()) {
+    const urlLimpia = nueva.trim().replace(/\/+$/, "");
+    localStorage.setItem("custom_api_url", urlLimpia);
+    alert(`URL de API actualizada a: ${urlLimpia}`);
+    window.location.reload();
+  }
+}
+
+function mostrarDetalleHerramienta(herramienta) {
+  const info = {
+    "devin": "🤖 Herramienta 1: Devin AI (Ingeniería y Scaffold)\nAcelerador autónomo de software utilizado para generar la arquitectura modular, contratos de esquemas Pydantic y lógica de controladores sin dependencias externas pesadas.",
+    "slack": "🔔 Herramienta 2: Slack Webhooks (Observabilidad)\nNotificaciones automáticas en tiempo real en el canal #alertas-erp de Slack al confirmar cada venta mayorista o detectar stock bajo en almacén.",
+    "vercel": "▲ Herramienta 3: Vercel Cloud (Hosting y Serverless Python)\nInfraestructura de entrega global con CDN perimetral de baja latencia y microservicios Serverless en Python 3.11 (@vercel/python).",
+    "comentera": "💬 Herramienta 4: Comentera (Feedback Visual)\nWidget colaborativo interactivo para anotaciones y revisiones docentes directamente sobre la interfaz de usuario.",
+    "threejs": "📦 Herramienta 5: Gráficos 3D con Three.js\nMotor WebGL con rotación orbital 360°, sombras e iluminación volumétrica para cubicaje e inspección visual de cajas, fardos y quintales.",
+    "supabase": "⚡ Herramienta 6: Supabase Cloud (Base de Datos PostgreSQL)\nMotor relacional PostgreSQL 15 en AWS Ohio con soporte estricto de transacciones ACID y Transaction Connection Pooler IPv4 (puerto 6543)."
+  };
+  alert(info[herramienta] || "Herramienta tecnológica integrada en el ERP Oki Doki.");
 }
 
 function mostrarPantallaLogin() {
