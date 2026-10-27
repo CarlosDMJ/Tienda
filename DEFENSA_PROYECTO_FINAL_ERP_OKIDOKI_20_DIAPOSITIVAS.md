@@ -14,7 +14,7 @@
 | **Entidad de Aplicación:** | Distribuidora Mayorista "Oki Doki" (Distribol) |
 | **Fecha de Presentación:** | Octubre 2026 |
 | **Sede:** | Santa Cruz de la Sierra, Bolivia |
-| **Aplicación Web en Producción:** | [https://frontend-rho-sable-26.vercel.app](https://frontend-rho-sable-26.vercel.app) |
+| **Aplicación Web en Producción:** | [https://okidoki-erp.vercel.app](https://okidoki-erp.vercel.app) *(alias: [frontend-rho-sable-26.vercel.app](https://frontend-rho-sable-26.vercel.app))* |
 | **Repositorio Oficial en GitHub:** | [https://github.com/CarlosDMJ/Tienda/tree/erp-okidoki](https://github.com/CarlosDMJ/Tienda/tree/erp-okidoki) |
 
 ---

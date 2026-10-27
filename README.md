@@ -10,9 +10,9 @@
 
 | Recurso | Enlace Directo | Estado |
 | :--- | :--- | :---: |
-| **🚀 Aplicación Web ERP (Producción):** | [https://frontend-rho-sable-26.vercel.app](https://frontend-rho-sable-26.vercel.app) | ![Vercel](https://img.shields.io/badge/Vercel-Producci%C3%B3n-success?logo=vercel) |
-| **📊 Diapositivas de Grado (20 Slides):** | [https://frontend-rho-sable-26.vercel.app/presentacion_defensa.html](https://frontend-rho-sable-26.vercel.app/presentacion_defensa.html) | ![Slides](https://img.shields.io/badge/Diapositivas-En_L%C3%ADnea-blue) |
-| **⚡ API REST Backend (FastAPI + Supabase):** | [https://frontend-rho-sable-26.vercel.app/api/v1/products](https://frontend-rho-sable-26.vercel.app/api/v1/products) | ![FastAPI](https://img.shields.io/badge/FastAPI-Serverless-009688?logo=fastapi) |
+| **🚀 Aplicación Web ERP (Producción):** | [https://okidoki-erp.vercel.app](https://okidoki-erp.vercel.app) *(alias: [okidoki-distribol.vercel.app](https://okidoki-distribol.vercel.app))* | ![Vercel](https://img.shields.io/badge/Vercel-Producci%C3%B3n-success?logo=vercel) |
+| **📊 Diapositivas de Grado (20 Slides):** | [https://okidoki-erp.vercel.app/presentacion_defensa.html](https://okidoki-erp.vercel.app/presentacion_defensa.html) | ![Slides](https://img.shields.io/badge/Diapositivas-En_L%C3%ADnea-blue) |
+| **⚡ API REST Backend (FastAPI + Supabase):** | [https://okidoki-erp.vercel.app/api/v1/products](https://okidoki-erp.vercel.app/api/v1/products) | ![FastAPI](https://img.shields.io/badge/FastAPI-Serverless-009688?logo=fastapi) |
 | **🗄️ Base de Datos Relacional Cloud:** | `aws-0-us-east-2.pooler.supabase.com:6543` | ![PostgreSQL](https://img.shields.io/badge/Supabase-PostgreSQL_15-3ECF8E?logo=supabase) |
 
 ---
