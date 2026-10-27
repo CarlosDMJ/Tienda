@@ -642,14 +642,20 @@
             </button>
           </div>
 
-          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.9rem;">
-            <button type="button" class="btn btn-sm btn-outline" style="flex: 1; border-color: var(--accent); color: var(--accent-hover); font-weight: 700;" onclick="accesoRapidoDemo('admin')">
-              ⚡ Entrar Rápido (Admin)
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 0.6rem;">
+            <button type="button" class="btn btn-sm btn-outline" style="border-color: var(--accent); color: var(--accent-hover); font-weight: 700; font-size: 0.76rem;" onclick="accesoRapidoDemo('admin')">
+              👑 Entrar Admin
             </button>
-            <button type="button" class="btn btn-sm btn-outline" style="flex: 1;" onclick="explorarModoDemo()">
-              👁️ Modo Explorador
+            <button type="button" class="btn btn-sm btn-outline" style="border-color: #3b82f6; color: #1d4ed8; font-weight: 700; font-size: 0.76rem;" onclick="accesoRapidoDemo('cajero1')">
+              🛒 Entrar Vendedor
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" style="border-color: #10b981; color: #047857; font-weight: 700; font-size: 0.76rem;" onclick="accesoRapidoDemo('almacen1')">
+              📦 Entrar Almacén
             </button>
           </div>
+          <button type="button" class="btn btn-sm btn-outline" style="width: 100%; margin-bottom: 0.9rem; font-size: 0.78rem;" onclick="explorarModoDemo()">
+            👁️ Modo Explorador (Ver todos los sectores sin login)
+          </button>
 
           <form onsubmit="event.preventDefault(); iniciarSesion();">
             <div class="form-group">

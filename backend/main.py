@@ -82,34 +82,22 @@ def seed_database():
     db = SessionLocal()
     try:
         # 1. USUARIOS Y ROLES (Sector 1)
-        if db.query(models.User).count() == 0:
-            db.add_all([
-                models.User(
-                    nombre_completo="Administrador General de Almacén",
-                    username="admin",
-                    email="admin@okidoki.bo",
-                    password_hash="123456",
-                    rol="Administrador",
+        operadores = [
+            ("admin", "Administrador General de Almacén", "admin@okidoki.bo", "123456", "Administrador"),
+            ("cajero1", "Carlos Méndez - Vendedor Mostrador", "ventas@okidoki.bo", "123456", "Cajero/Vendedor"),
+            ("almacen1", "Hugo Torrico - Encargado de Existencias", "almacen@okidoki.bo", "123456", "Encargado de Almacén")
+        ]
+        for u_name, nombre, email, pwd, rol in operadores:
+            if not db.query(models.User).filter(models.User.username == u_name).first():
+                db.add(models.User(
+                    nombre_completo=nombre,
+                    username=u_name,
+                    email=email,
+                    password_hash=pwd,
+                    rol=rol,
                     activo=True
-                ),
-                models.User(
-                    nombre_completo="Carlos Méndez - Vendedor Mostrador",
-                    username="cajero1",
-                    email="ventas@okidoki.bo",
-                    password_hash="123456",
-                    rol="Cajero/Vendedor",
-                    activo=True
-                ),
-                models.User(
-                    nombre_completo="Hugo Torrico - Encargado de Existencias",
-                    username="almacen1",
-                    email="almacen@okidoki.bo",
-                    password_hash="123456",
-                    rol="Encargado de Almacén",
-                    activo=True
-                )
-            ])
-            db.commit()
+                ))
+        db.commit()
 
         # 2. PROVEEDORES MAYORISTAS (Sector 3)
         if db.query(models.Supplier).count() == 0:
