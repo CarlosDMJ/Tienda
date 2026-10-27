@@ -25,6 +25,14 @@ class LoginRequest(BaseModel):
     password: str = Field(..., description="Contraseña de acceso")
 
 
+class HeartbeatRequest(BaseModel):
+    username: str = Field(..., description="Usuario activo que reporta presencia")
+
+
+class LogoutRequest(BaseModel):
+    username: Optional[str] = Field(None, description="Usuario que cierra sesión")
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -37,6 +45,8 @@ class UserOut(BaseModel):
     email: Optional[str] = None
     rol: str
     activo: bool
+    en_linea: Optional[bool] = False
+    ultimo_acceso: Optional[datetime] = None
     fecha_creacion: Optional[datetime] = None
 
     class Config:

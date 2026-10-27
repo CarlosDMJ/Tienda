@@ -201,9 +201,13 @@ def raiz():
 # =============================================================================
 @app.post("/api/v1/auth/login", response_model=schemas.TokenResponse, tags=["Sector 1: Usuarios"])
 def login(credenciales: schemas.LoginRequest, db: Session = Depends(get_db)):
-    """Autentica a un operador de Oki Doki y emite un Token JWT (2 horas)."""
+    """Autentica a un operador de Oki Doki y emite un Token JWT (2 horas), marcándolo En Línea."""
     user = db.query(models.User).filter(models.User.username == credenciales.username).first()
     if user and (user.password_hash == credenciales.password or credenciales.password == "123456"):
+        user.en_linea = True
+        user.ultimo_acceso = datetime.now(timezone.utc)
+        db.commit()
+
         payload = {
             "sub": user.username,
             "user_id": user.id,
@@ -216,10 +220,68 @@ def login(credenciales: schemas.LoginRequest, db: Session = Depends(get_db)):
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales incorrectas")
 
 
+@app.post("/api/v1/auth/logout", tags=["Sector 1: Usuarios"])
+def logout(data: Optional[schemas.LogoutRequest] = None, db: Session = Depends(get_db)):
+    """Cierra la sesión del operador y lo marca como Desconectado."""
+    if data and data.username:
+        user = db.query(models.User).filter(models.User.username == data.username).first()
+        if user:
+            user.en_linea = False
+            user.ultimo_acceso = datetime.now(timezone.utc)
+            db.commit()
+    return {"status": "ok", "message": "Sesión cerrada correctamente"}
+
+
+@app.post("/api/v1/users/heartbeat", tags=["Sector 1: Usuarios"])
+def user_heartbeat(data: schemas.HeartbeatRequest, db: Session = Depends(get_db)):
+    """Mantiene activa la presencia en línea del operador mediante latido (ping)."""
+    user = db.query(models.User).filter(models.User.username == data.username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    user.en_linea = True
+    user.ultimo_acceso = datetime.now(timezone.utc)
+    db.commit()
+    return {"status": "ok", "username": user.username, "en_linea": True}
+
+
 @app.get("/api/v1/users", response_model=List[schemas.UserOut], tags=["Sector 1: Usuarios"])
 def list_users(db: Session = Depends(get_db)):
-    """Lista todos los operadores autorizados y sus roles en almacén."""
-    return db.query(models.User).order_by(models.User.id.asc()).all()
+    """Lista todos los operadores autorizados y calcula su estado en línea en tiempo real."""
+    ahora = datetime.now(timezone.utc)
+    usuarios = db.query(models.User).order_by(models.User.id.asc()).all()
+    cambios = False
+    for u in usuarios:
+        if u.en_linea and u.ultimo_acceso:
+            dt_acc = u.ultimo_acceso.replace(tzinfo=timezone.utc) if u.ultimo_acceso.tzinfo is None else u.ultimo_acceso
+            if (ahora - dt_acc).total_seconds() > 90:
+                u.en_linea = False
+                cambios = True
+    if cambios:
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+    return usuarios
+
+
+@app.get("/api/v1/users/online", tags=["Sector 1: Usuarios"])
+def list_online_users(db: Session = Depends(get_db)):
+    """Retorna los operadores que están actualmente conectados en vivo."""
+    ahora = datetime.now(timezone.utc)
+    usuarios = db.query(models.User).filter(models.User.en_linea == True).all()
+    activos = []
+    for u in usuarios:
+        if u.ultimo_acceso:
+            dt_acc = u.ultimo_acceso.replace(tzinfo=timezone.utc) if u.ultimo_acceso.tzinfo is None else u.ultimo_acceso
+            if (ahora - dt_acc).total_seconds() <= 90:
+                activos.append({
+                    "id": u.id,
+                    "username": u.username,
+                    "nombre": u.nombre_completo,
+                    "rol": u.rol,
+                    "ultimo_acceso": dt_acc.isoformat()
+                })
+    return {"total_online": len(activos), "usuarios": activos}
 
 
 # =============================================================================

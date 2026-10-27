@@ -31,6 +31,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     rol = Column(String(30), default="Administrador", nullable=False)  # Administrador | Cajero/Vendedor | Encargado de Almacén
     activo = Column(Boolean, default=True, nullable=False)
+    en_linea = Column(Boolean, default=False, nullable=True)
+    ultimo_acceso = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=True)
     fecha_creacion = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     sales = relationship("Sale", back_populates="user")

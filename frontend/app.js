@@ -43,6 +43,11 @@ let scene, camera, renderer, cubeMesh, edgeMesh, orbitControls;
 let isSpinning = true;
 let animFrameId = null;
 
+// Control de presencia en tiempo real (Supabase PostgreSQL)
+let heartbeatTimer = null;
+let presenciaMonitorTimer = null;
+let vendedorOnlinePrevio = false;
+
 // Inicialización general al cargar el DOM
 document.addEventListener("DOMContentLoaded", async () => {
   // Al entrar al enlace, ir directamente a la pantalla de login (requerimiento de evaluación y seguridad)
@@ -94,6 +99,7 @@ function explorarModoDemo() {
   verificarEstadoSesion();
   cargarProductos();
   initVisor3D();
+  iniciarMonitoreoPresencia();
   mostrarSector("sector-inventario");
   mostrarAlerta("👁️ Modo Explorador activado. Todos los sectores y el visor 3D están desbloqueados.", "info");
 }
@@ -182,6 +188,10 @@ async function iniciarSesion() {
 
     mostrarAlerta(`✅ ¡Bienvenido(a), ${username}! Sesión iniciada con éxito. Token JWT activo (HS256).`, "success");
 
+    // Iniciar latido de presencia y monitoreo reactivo en vivo
+    iniciarHeartbeat(username);
+    iniciarMonitoreoPresencia();
+
     // Actualizar vista
     verificarEstadoSesion();
     await cargarProductos();
@@ -200,6 +210,13 @@ async function iniciarSesion() {
 }
 
 function cerrarSesionSilencioso() {
+  detenerHeartbeat();
+  detenerMonitoreoPresencia();
+  vendedorOnlinePrevio = false;
+
+  const presencePill = document.getElementById("live-presence-pill");
+  if (presencePill) presencePill.style.display = "none";
+
   localStorage.removeItem("jwt_token");
   localStorage.removeItem("jwt_user");
   localStorage.removeItem("jwt_role");
@@ -217,7 +234,22 @@ function cerrarSesionSilencioso() {
   }
 }
 
-function cerrarSesion() {
+async function cerrarSesion() {
+  const prevUser = localStorage.getItem("jwt_user");
+  detenerHeartbeat();
+  detenerMonitoreoPresencia();
+  vendedorOnlinePrevio = false;
+
+  if (prevUser) {
+    try {
+      fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: prevUser })
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
   cerrarSesionSilencioso();
   mostrarAlerta("🚪 Sesión cerrada correctamente. Token JWT revocado.", "info");
 }
@@ -900,27 +932,179 @@ async function cargarKardex() {
 
 
 // ==============================================================================
-// SECTOR 1: USUARIOS Y OPERADORES (users)
+// SECTOR 1: USUARIOS Y OPERADORES (users) - PRESENCIA EN TIEMPO REAL
 // ==============================================================================
-async function cargarUsuarios() {
+function iniciarHeartbeat(username) {
+  detenerHeartbeat();
+  if (!username) return;
+
+  const enviarPing = async () => {
+    try {
+      await fetch(`${API_URL}/users/heartbeat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username })
+      });
+    } catch (e) {}
+  };
+
+  enviarPing();
+  heartbeatTimer = setInterval(enviarPing, 15000);
+}
+
+function detenerHeartbeat() {
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+  }
+}
+
+function iniciarMonitoreoPresencia() {
+  if (presenciaMonitorTimer) clearInterval(presenciaMonitorTimer);
+
+  const chequearPresencia = async () => {
+    const token = localStorage.getItem("jwt_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/users`);
+      if (!res.ok) return;
+      const usuarios = await res.json();
+      actualizarUIOnline(usuarios);
+    } catch (e) {}
+  };
+
+  chequearPresencia();
+  presenciaMonitorTimer = setInterval(chequearPresencia, 3500);
+}
+
+function detenerMonitoreoPresencia() {
+  if (presenciaMonitorTimer) {
+    clearInterval(presenciaMonitorTimer);
+    presenciaMonitorTimer = null;
+  }
+}
+
+function actualizarUIOnline(usuarios) {
+  if (!Array.isArray(usuarios)) return;
+
+  const currentUser = localStorage.getItem("jwt_user");
+  const adminUser = usuarios.find(u => u.username === "admin");
+  const cajeroUser = usuarios.find(u => u.username === "cajero1");
+  const almacenUser = usuarios.find(u => u.username === "almacen1");
+
+  const adminOnline = !!adminUser?.en_linea;
+  const cajeroOnline = !!cajeroUser?.en_linea;
+  const almacenOnline = !!almacenUser?.en_linea;
+  const totalOnline = usuarios.filter(u => u.en_linea).length;
+
+  // 1. Notificación reactiva al Admin cuando el Vendedor se conecta o desconecta
+  if (currentUser === "admin") {
+    if (cajeroOnline && !vendedorOnlinePrevio) {
+      mostrarAlerta("🔔 ¡VENDEDOR CONECTADO EN LÍNEA! El operador 'cajero1' (Ventas Mostrador) acaba de ingresar al sistema.", "success");
+    } else if (!cajeroOnline && vendedorOnlinePrevio) {
+      mostrarAlerta("ℹ️ El Vendedor Mostrador ('cajero1') se ha desconectado.", "info");
+    }
+  }
+  vendedorOnlinePrevio = cajeroOnline;
+
+  // 2. Header pill de presencia en vivo (Siempre visible para el Admin y operadores)
+  const presencePill = document.getElementById("live-presence-pill");
+  const statusText = document.getElementById("vendedor-status-text");
+  const pulseDot = document.getElementById("presence-pulse-dot");
+
+  if (presencePill) {
+    presencePill.style.display = "inline-flex";
+    if (cajeroOnline) {
+      presencePill.style.borderColor = "rgba(16, 185, 129, 0.9)";
+      presencePill.style.color = "#10b981";
+      presencePill.style.background = "rgba(16, 185, 129, 0.15)";
+      if (statusText) statusText.innerHTML = `<strong>EN LÍNEA</strong> (cajero1)`;
+      if (pulseDot) {
+        pulseDot.textContent = "🟢";
+        pulseDot.className = "pulse-indicator";
+      }
+    } else {
+      presencePill.style.borderColor = "rgba(148, 163, 184, 0.5)";
+      presencePill.style.color = "#94a3b8";
+      presencePill.style.background = "rgba(148, 163, 184, 0.08)";
+      if (statusText) statusText.textContent = "Desconectado";
+      if (pulseDot) {
+        pulseDot.textContent = "⚪";
+        pulseDot.className = "";
+      }
+    }
+  }
+
+  // 3. Badge en la pestaña del Sector 1
+  const tabBadge = document.getElementById("badge-online-users");
+  if (tabBadge) {
+    tabBadge.textContent = `${totalOnline} online`;
+    tabBadge.style.background = totalOnline > 1 ? "#10b981" : "#3b82f6";
+  }
+
+  // 4. Radar de Operadores en Sector 1
+  const badgeAdmin = document.getElementById("presence-badge-admin");
+  const badgeCajero = document.getElementById("presence-badge-cajero");
+  const badgeAlmacen = document.getElementById("presence-badge-almacen");
+
+  if (badgeAdmin) {
+    badgeAdmin.className = adminOnline ? "badge-stock high" : "badge-stock low";
+    badgeAdmin.innerHTML = adminOnline ? '<span class="pulse-indicator">🟢</span> En Línea' : '⚪ Desconectado';
+  }
+  if (badgeCajero) {
+    badgeCajero.className = cajeroOnline ? "badge-stock high" : "badge-stock low";
+    badgeCajero.innerHTML = cajeroOnline ? '<span class="pulse-indicator">🟢</span> En Línea' : '⚪ Desconectado';
+  }
+  if (badgeAlmacen) {
+    badgeAlmacen.className = almacenOnline ? "badge-stock high" : "badge-stock low";
+    badgeAlmacen.innerHTML = almacenOnline ? '<span class="pulse-indicator">🟢</span> En Línea' : '⚪ Desconectado';
+  }
+
+  // 5. Tabla de Operadores
+  renderizarTablaUsuarios(usuarios);
+}
+
+function renderizarTablaUsuarios(usuarios) {
   const tbody = document.getElementById("users-tbody");
   if (!tbody) return;
 
+  tbody.innerHTML = usuarios.map(u => {
+    const isOnline = !!u.en_linea;
+    const badgeHtml = isOnline
+      ? '<span class="badge-stock high" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;"><span class="pulse-indicator">🟢</span> En Línea</span>'
+      : '<span class="badge-stock low" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0;">⚪ Desconectado</span>';
+
+    let lastAccess = "Sin registro";
+    if (u.ultimo_acceso) {
+      try {
+        const d = new Date(u.ultimo_acceso);
+        lastAccess = d.toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      } catch (e) {}
+    }
+
+    return `
+      <tr>
+        <td><strong>#${u.id}</strong></td>
+        <td>
+          <strong>${u.nombre_completo}</strong>
+          <small style="color: var(--muted); display: block; font-size: 0.73rem;">Última Actividad: ${lastAccess}</small>
+        </td>
+        <td><code>${u.username}</code></td>
+        <td><span style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; color: #1e293b;">${u.rol}</span></td>
+        <td>${u.email || 'S/N'}</td>
+        <td>${badgeHtml}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+async function cargarUsuarios() {
   try {
     const res = await fetch(`${API_URL}/users`);
     if (!res.ok) throw new Error("HTTP " + res.status);
     const users = await res.json();
-
-    tbody.innerHTML = users.map(u => `
-      <tr>
-        <td><strong>#${u.id}</strong></td>
-        <td><strong>${u.nombre_completo}</strong></td>
-        <td><code>${u.username}</code></td>
-        <td><span style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; color: #1e293b;">${u.rol}</span></td>
-        <td>${u.email || 'S/N'}</td>
-        <td><span class="badge-stock high">● Habilitado</span></td>
-      </tr>
-    `).join("");
+    actualizarUIOnline(users);
   } catch (e) {
     console.error("Error al cargar usuarios:", e);
   }
