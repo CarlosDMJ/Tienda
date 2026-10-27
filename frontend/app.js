@@ -45,7 +45,8 @@ let animFrameId = null;
 
 // Inicialización general al cargar el DOM
 document.addEventListener("DOMContentLoaded", async () => {
-  verificarEstadoSesion();
+  // Al entrar al enlace, ir directamente a la pantalla de login (requerimiento de evaluación y seguridad)
+  cerrarSesionSilencioso();
   verificarSaludBackend();
 
   // Escuchar cambios en selector de venta
@@ -198,12 +199,26 @@ async function iniciarSesion() {
   }
 }
 
-function cerrarSesion() {
+function cerrarSesionSilencioso() {
   localStorage.removeItem("jwt_token");
   localStorage.removeItem("jwt_user");
   localStorage.removeItem("jwt_role");
+  sessionStorage.removeItem("jwt_token");
+  sessionStorage.removeItem("jwt_user");
+  sessionStorage.removeItem("jwt_role");
 
-  verificarEstadoSesion();
+  mostrarPantallaLogin();
+
+  const jwtStatusPill = document.getElementById("jwt-status");
+  if (jwtStatusPill) {
+    jwtStatusPill.textContent = "Sesión: Sin Token";
+    jwtStatusPill.style.borderColor = "rgba(245, 158, 11, 0.6)";
+    jwtStatusPill.style.color = "#f59e0b";
+  }
+}
+
+function cerrarSesion() {
+  cerrarSesionSilencioso();
   mostrarAlerta("🚪 Sesión cerrada correctamente. Token JWT revocado.", "info");
 }
 
